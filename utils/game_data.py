@@ -80,12 +80,71 @@ class GameData:
 
 # ── Answer checking ───────────────────────────────────────────────────────────
 
+try:
+    from rapidfuzz import fuzz as _fuzz
+    _RAPIDFUZZ_AVAILABLE = True
+except ImportError:          # fallback: exact-only until dep is installed
+    _RAPIDFUZZ_AVAILABLE = False
+
+# similarity thresholds (0–100 scale, Levenshtein-based)
+_CORRECT_THRESHOLD = 82   # ≥ this → accepted as correct
+_CLOSE_THRESHOLD   = 65   # ≥ this but < CORRECT → "warm, keep trying" hint
+
+
+def _similarity(a: str, b: str) -> float:
+    """
+    Returns the highest similarity score (0–100) between two strings using:
+      • fuzz.ratio            – straight Levenshtein similarity
+      • fuzz.token_set_ratio  – ignores word order / extra articles ('The', 'A')
+
+    Falls back to 100-if-equal / 0-otherwise when rapidfuzz isn't installed.
+    """
+    if not _RAPIDFUZZ_AVAILABLE:
+        return 100.0 if a == b else 0.0
+    return max(
+        _fuzz.ratio(a, b),
+        _fuzz.token_set_ratio(a, b),
+    )
+
+
 def check_answer(user_input: str, question: dict) -> bool:
-    """Case-insensitive, whitespace-stripped match against answer + alts."""
+    """
+    Returns True when user_input is an acceptable answer.
+
+    Acceptance criteria (evaluated against the canonical answer AND every alt):
+      1. Exact match after case-fold + strip
+      2. Similarity ≥ 82 %  (catches typos, missing/swapped letters)
+      3. token_set_ratio ≥ 85 % (catches missing articles: 'Lion King' → 'The Lion King')
+
+    Inputs ≤ 3 characters skip fuzzy checks to avoid noisy false-positives.
+    """
     normalised = user_input.strip().lower()
-    if normalised == question["answer"].strip().lower():
-        return True
-    return normalised in question["answer_alts"]
+    if not normalised:
+        return False
+
+    candidates = [question["answer"].strip().lower()] + question["answer_alts"]
+
+    for candidate in candidates:
+        if normalised == candidate:          # exact
+            return True
+        if len(normalised) <= 3:             # too short to fuzzy-match reliably
+            continue
+        if _similarity(normalised, candidate) >= _CORRECT_THRESHOLD:
+            return True
+
+    return False
+
+
+def answer_closeness(user_input: str, question: dict) -> float:
+    """
+    Returns the best similarity score (0–100) without deciding accept/reject.
+    Used by the game cog to give a 'warm!' hint when the player is close.
+    """
+    normalised = user_input.strip().lower()
+    if not normalised or len(normalised) <= 3:
+        return 0.0
+    candidates = [question["answer"].strip().lower()] + question["answer_alts"]
+    return max(_similarity(normalised, c) for c in candidates)
 
 
 # ── Scoring ───────────────────────────────────────────────────────────────────

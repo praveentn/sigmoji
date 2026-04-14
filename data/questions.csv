@@ -83,10 +83,10 @@ id,category,answer,emojis,answer_alts,fact,difficulty
 82,Indian Foods,Chole Bhature,🥖 🍲 🧅,chole bhature,"Fluffy deep-fried bread served with spicy chickpeas. A heavy, soul-satisfying Punjabi classic.",medium
 83,Indian Snacks,Bhel Puri,🥣 🧅 🌶️,bhel puri,"A light snack made of puffed rice, onions, tomatoes, and tangy chutneys. The perfect beach snack.",easy
 84,Indian Snacks,Aloo Tikki,🥔 🥘 🟢,aloo tikki,"Crispy potato patties spiced with ginger and chilies, often topped with yogurt and sweet tamarind sauce.",easy
-85,International,Ramen,🍜 🥚 🍥,ramen,"Rich, savory broth with chewy wheat noodles, topped with a soft-boiled egg and tender pork belly.",hard
-86,International,Paella,🥘 🦐 🥘,paella,"A Spanish rice dish flavored with saffron and loaded with seafood, chicken, and vegetables.",hard
-87,International,Fish and Chips,🐟 🍟 🍋,fish chips,"Crispy beer-battered white fish served with chunky potato fries and tartare sauce.",medium
-88,International,Gelato,🍦 🍨 🇮🇹,gelato,"Italian-style ice cream that is denser and smoother than regular ice cream with intense flavors.",medium
+85,International Dishes,Ramen,🍜 🥚 🍥,ramen,"Rich, savory broth with chewy wheat noodles, topped with a soft-boiled egg and tender pork belly.",hard
+86,International Dishes,Paella,🥘 🦐 🥘,paella,"A Spanish rice dish flavored with saffron and loaded with seafood, chicken, and vegetables.",hard
+87,International Dishes,Fish and Chips,🐟 🍟 🍋,fish chips,"Crispy beer-battered white fish served with chunky potato fries and tartare sauce.",medium
+88,International Dishes,Gelato,🍦 🍨 🇮🇹,gelato,"Italian-style ice cream that is denser and smoother than regular ice cream with intense flavors.",medium
 89,Desserts,Macarons,🌈 🍪 🇫🇷,macarons,"Delicate almond flour meringue cookies with a soft ganache filling. Known for their vibrant colors.",hard
 90,Desserts,Pancakes,🥞 🍯 🍓,pancakes,"Stack of fluffy griddle cakes topped with a pat of butter and maple syrup. A breakfast favorite.",easy
 91,Indian Foods,Pav Bhaji,🍞 🥘 🧈,pav bhaji,"A thick vegetable mash cooked in butter and spices, served with toasted, butter-slathered buns.",medium

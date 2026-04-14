@@ -24,7 +24,8 @@ from discord.ext import commands
 from utils.game_data import (
     ACTIVE_GAMES, RECENT_IDS, MAX_RECENT,
     GameSession, GameData,
-    check_answer, calculate_points,
+    check_answer, answer_closeness, _CLOSE_THRESHOLD, _CORRECT_THRESHOLD,
+    calculate_points,
     reveal_random_letter, max_hints,
 )
 from utils import database as db
@@ -356,9 +357,17 @@ class SigmojiCog(commands.Cog):
             return
 
         if not check_answer(message.content, session.question):
-            # Optionally react with ❌ to confirm the bot noticed (non-spammy)
+            # Give warm/cold feedback based on how close the guess is.
+            score = answer_closeness(message.content, session.question)
             try:
-                await message.add_reaction("❌")
+                if score >= _CLOSE_THRESHOLD:
+                    # Very close — different emoji per heat level
+                    if score >= 75:
+                        await message.add_reaction("🔥")   # almost there
+                    else:
+                        await message.add_reaction("🌡️")  # warm
+                else:
+                    await message.add_reaction("❌")        # wrong track
             except Exception:
                 pass
             return
