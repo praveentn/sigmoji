@@ -59,3 +59,43 @@ id,category,answer,emojis,answer_alts,fact,difficulty
 58,Indian Foods,Rasgulla,⚪ 🍬 🥛,rosogolla,"Kolkata and Odisha have been in a decades-long legal battle over its origin! Odisha finally won the GI tag in 2019. Both are delicious though.",medium
 59,Indian Foods,Pav Bhaji,🍞 🫕 🧈,,"Invented in 1850s Mumbai to feed textile mill workers a quick hot meal! The 'mashing' technique was borrowed from Portuguese cooking.",easy
 60,Indian Foods,Appam,⭕ 🥞 🥥,aapam,"A Kerala breakfast with a spongy centre and lacy crispy edges! The secret is fermented rice batter + coconut milk. Pairs perfectly with stew.",medium
+61,Indian Snacks,Samosa,📐 🥔 🌶️,samosa,"The ultimate triangular pastry stuffed with spiced potatoes and peas. Deep-fried until golden and incredibly crunchy.",medium
+62,Indian Snacks,Vada Pav,🍔 🥔 🇮🇳,vada pav,"The pride of Mumbai! A spicy potato fritter sandwiched in a soft bun with garlic chutney and a fried green chili.",easy
+63,Indian Snacks,Pani Puri,💣 🥗 💧,pani puri,"Crispy hollow spheres filled with chickpeas and potatoes. Dip them in tangy mint water for an explosion of flavor.",hard
+64,Indian Snacks,Dhokla,🟨 🍰 🍛,dhokla,"A savory steamed sponge cake from Gujarat made of fermented gram flour. Light, airy, and tempered with mustard seeds.",medium
+65,Indian Foods,Palak Paneer,🥬 🧀 🥘,palak paneer,"Soft cubes of cottage cheese swimming in a vibrant, creamy spinach gravy. A nutritious powerhouse of flavor.",medium
+66,Indian Foods,Butter Chicken,🍗 🍅 🧈,butter chicken,"Succulent grilled chicken pieces simmered in a velvety tomato and cream sauce. The king of North Indian curries.",medium
+67,Indian Foods,Dal Makhani,🍲 🖤 🧈,dal makhani,"Black lentils and kidney beans slow-cooked overnight with plenty of butter and cream for a rich, smoky taste.",hard
+68,Indian Foods,Biryani,🍚 🍗 🏺,biryani,"Fragrant basmati rice layered with marinated meat and aromatic spices. Each region in India has its own secret version.",hard
+69,International,Pizza Margherita,🍕 🍅 🌿,margherita,"The Italian classic representing the flag: red tomatoes, white mozzarella, and green basil on a thin crust.",medium
+70,International,Sushi Roll,🍣 🍱 🌊,sushi,"Vineigared rice combined with fresh seafood or vegetables, wrapped in seaweed. A masterclass in balance and texture.",hard
+71,International,Tacos,🌮 🥑 🥩,tacos,"Folded corn tortillas packed with seasoned meat, fresh salsa, and creamy avocado. A handheld fiesta.",easy
+72,International,Croissant,🥐 🇫🇷 🧈,croissant,"A buttery, flaky French pastry with hundreds of paper-thin layers. Best enjoyed warm with a coffee.",hard
+73,International,Pad Thai,🍜 🥜 🍋,pad thai,"The quintessential Thai street food. Stir-fried rice noodles with tofu, shrimp, peanuts, and a tangy tamarind sauce.",medium
+74,International,Burger,🍔 🧀 🍟,burger,"A juicy grilled patty topped with melted cheese, lettuce, and onions. The universal symbol of comfort food.",easy
+75,International,Dim Sum,🥟 🥢 ☕,dim sum,"Bite-sized Chinese dumplings served in bamboo steamers. Perfect for sharing during a long brunch.",hard
+76,Desserts,Gulab Jamun,🟠 🍯 🥄,gulab jamun,"Deep-fried milk solids soaked in a warm cardamom and rose water syrup. Like tiny, sweet clouds.",medium
+77,Desserts,Tiramisu,☕ 🍰 🇮🇹,tiramisu,"An elegant Italian dessert made of coffee-soaked ladyfingers layered with rich mascarpone cream.",medium
+78,Desserts,Cheesecake,🍰 🧀 🍓,cheesecake,"A thick, creamy filling on a graham cracker crust. Can be baked or chilled and topped with fruit.",medium
+79,Desserts,Churros,🥢 🍫 🥨,churros,"Spanish fried dough sticks coated in cinnamon sugar and served with a thick chocolate dipping sauce.",easy
+80,Desserts,Baklava,📐 🍯 🥜,baklava,"Middle Eastern pastry made of layers of filo dough, chopped nuts, and held together with honey syrup.",hard
+81,Indian Foods,Masala Dosa,🌯 🥔 ☕,dosa,"A thin, crispy rice crepe stuffed with a savory potato filling. Served with coconut chutney and sambar.",medium
+82,Indian Foods,Chole Bhature,🥖 🍲 🧅,chole bhature,"Fluffy deep-fried bread served with spicy chickpeas. A heavy, soul-satisfying Punjabi classic.",medium
+83,Indian Snacks,Bhel Puri,🥣 🧅 🌶️,bhel puri,"A light snack made of puffed rice, onions, tomatoes, and tangy chutneys. The perfect beach snack.",easy
+84,Indian Snacks,Aloo Tikki,🥔 🥘 🟢,aloo tikki,"Crispy potato patties spiced with ginger and chilies, often topped with yogurt and sweet tamarind sauce.",easy
+85,International,Ramen,🍜 🥚 🍥,ramen,"Rich, savory broth with chewy wheat noodles, topped with a soft-boiled egg and tender pork belly.",hard
+86,International,Paella,🥘 🦐 🥘,paella,"A Spanish rice dish flavored with saffron and loaded with seafood, chicken, and vegetables.",hard
+87,International,Fish and Chips,🐟 🍟 🍋,fish chips,"Crispy beer-battered white fish served with chunky potato fries and tartare sauce.",medium
+88,International,Gelato,🍦 🍨 🇮🇹,gelato,"Italian-style ice cream that is denser and smoother than regular ice cream with intense flavors.",medium
+89,Desserts,Macarons,🌈 🍪 🇫🇷,macarons,"Delicate almond flour meringue cookies with a soft ganache filling. Known for their vibrant colors.",hard
+90,Desserts,Pancakes,🥞 🍯 🍓,pancakes,"Stack of fluffy griddle cakes topped with a pat of butter and maple syrup. A breakfast favorite.",easy
+91,Indian Foods,Pav Bhaji,🍞 🥘 🧈,pav bhaji,"A thick vegetable mash cooked in butter and spices, served with toasted, butter-slathered buns.",medium
+92,Indian Foods,Idli,⚪ 🥣 🥥,idli,"Soft, fluffy steamed cakes made from fermented rice and lentil batter. The ultimate healthy breakfast.",easy
+93,Indian Snacks,Pakora,🥦 🥨 ☕,pakora,"Vegetables dipped in spiced gram flour batter and deep-fried. The best companion for a rainy day.",easy
+94,International,Falafel,🧆 🥙 🥒,falafel,"Deep-fried balls of ground chickpeas and herbs, usually served in a pita with tahini and salad.",medium
+95,International,Lasagna,🍝 🧀 🍅,lasagna,"Layers of wide pasta, meaty ragu, and creamy béchamel sauce, baked until bubbly and golden.",hard
+96,International,Peking Duck,🦆 🥞 🥢,peking duck,"Prized for its thin, crispy skin, served with thin pancakes, hoisin sauce, and scallions.",hard
+97,Desserts,Brownies,🍫 🍰 🧊,brownies,"Dense, fudgy chocolate squares that sit somewhere between a cake and a cookie in texture.",easy
+98,Desserts,Apple Pie,🥧 🍎 🥧,apple pie,"A classic dessert with a flaky crust and a warm filling of spiced apples and cinnamon.",medium
+99,Indian Foods,Rogan Josh,🥘 🥩 🌶️,rogan josh,"A fragrant Kashmiri lamb curry cooked with alkanet flower and Kashmiri chilies for a deep red color.",hard
+100,Indian Foods,Poha,🥣 🟡 🍋,poha,"Flattened rice sautéed with onions, turmeric, and peanuts. A light and zesty breakfast from Central India.",easy
