@@ -1,0 +1,61 @@
+id,category,answer,emojis,answer_alts,fact,difficulty
+1,Kerala Places,Kozhikode,🐔 🧥,calicut,"Vasco da Gama landed here in 1498 — opening Europe's sea route to India! City of Spices & the famous Zamorin kings. 🐔Kozhi(Chicken)+🧥Coat = Kozhikode",medium
+2,Kerala Places,Palakkad,🥛 🌲,palghat,"Gateway to Kerala via the Palakkad Gap in the Western Ghats. Famous for the ancient Palakkad Fort built by Hyder Ali. 🥛Paal(Milk)+🌲Kadu(Forest) = Palakkad",medium
+3,Kerala Places,Wayanad,🌾 🗺️,,"Kerala's only district fully in the Western Ghats! Home to Edakkal Caves with carvings from 6000 BCE. 🌾Vayal(Paddy field)+🗺️Nadu(Land) = Wayanad",easy
+4,Kerala Places,Idukki,🤏 🔑,,"Home to Asia's largest arch dam! The narrow valleys here are so tight that the name literally means 'narrow place'. 🤏Idukku(Narrow/Pinch)+🔑Key = Idukki",hard
+5,Kerala Places,Kottayam,🏰 🏠,,"First fully literate district in India! Also called Land of Letters, Latex & Lakes — rubber and backwaters define it. 🏰Kotta(Fort)+🏠Akam(Inside) = Kottayam",medium
+6,Kerala Places,Kannur,👁️ 🚪,cannanore,"Famous for the mystical Theyyam ritual — a living tradition 2000 years old where performers become gods. 👁️Kannu(Eye)+🚪Ur/Door(Town) = Kannur",medium
+7,Kerala Places,Malappuram,⛰️ 🏯,,"Home to Kottakkal Arya Vaidya Sala, a 100+ year old Ayurvedic institution known worldwide. ⛰️Mala(Hill)+🏯Puram(Fort/City) = Malappuram",medium
+8,Kerala Places,Ponnani,🪙 🐘,,"A historic port town called the 'Mecca of Kerala' for its grand Juma Masjid, one of the oldest mosques in Asia. 🪙Pon(Gold)+🐘Aana/Aani(Elephant) = Ponnani",hard
+9,Kerala Places,Alappuzha,🌊 🛶,alleppey,"The Venice of the East! The Nehru Trophy Boat Race here has been held since 1952. Houseboats are a way of life. 🌊Ala(Wave)+🛶Puzha(River) = Alappuzha",easy
+10,Kerala Places,Thrissur,3️⃣ ⛪,trichur,"Cultural capital of Kerala! The Thrissur Pooram — 100 decorated elephants and thundering percussion — is unmatched anywhere. 3️⃣Thri(Three)+⛪Soor(Divine) = Thrissur",easy
+11,Kerala Places,Aluva,🍮,,"A sweet little town on the Periyar riverbank! The name literally sounds like 'Halwa', the beloved Indian sweet. 🍮 sounds like Halwa → Aluva",easy
+12,Kerala Places,Munnar,3️⃣ ⛰️,,"A misty paradise at 1600m — home to the world's highest tea gardens! Three rivers (Moonu Aar) meet here. 3️⃣Moonu(Three)+⛰️Aar(River/Peak) = Munnar",easy
+13,Kerala Places,Pathanamthitta,🥣 🧱,,"Pilgrimage capital of Kerala and gateway to Sabarimala! Millions of devotees pass through each year. 🥣Pathram(Vessel)+🧱Thitta(Platform) = Pathanamthitta",hard
+14,Kerala Places,Guruvayur,👨‍🏫 🌬️,,"The Guruvayur Sri Krishna Temple is one of India's most visited temples! Elephants here get named after kings of old. 👨‍🏫Guru(Teacher)+🌬️Vayu(Wind God) = Guruvayur",medium
+15,Kerala Places,Kumarakom,👦 🏘️,,"A breathtaking backwater village on Vembanad Lake! Bird sanctuary here is a paradise for migratory birds. 👦Kumaran(Boy/Young man)+🏘️Kom(Village) = Kumarakom",medium
+16,Kerala Places,Kollam,⚡ 🏠,quilon,"Cashew capital of the world! Over 70% of India's cashew is processed here. Also known as Quilon, one of Kerala's oldest ports. ⚡Kol(Power/pole)+🏠Am(place/home) = Kollam",medium
+17,Kerala Places,Varkala,🪨 🌊,,"A cliff-beach town famous for its natural mineral springs — the water here has therapeutic properties! 🪨Varku(Rock/cliff)+🌊Ala(Wave) = Varkala",medium
+18,Kerala Places,Kovalam,🥥 🌊,,"An iconic crescent-shaped beach near Thiruvananthapuram known as the Lighthouse Beach. Kerala tourism was born here! 🥥Kochu(Small)+🌊Alam(Grove/Land) = Kovalam",medium
+19,Kerala Places,Thalassery,🎂 🌊,tellicherry,"Birthplace of the famous Thalassery Biryani AND Kerala circus! Circus arts were developed here in the 1800s. 🎂Thalas(sweet/cake)+🌊Sery(place near sea) = Thalassery",hard
+20,Kerala Places,Kasargod,🏰 🐄,,"Northernmost district of Kerala with 7 languages spoken! Home to Bekal Fort — the largest fort in Kerala. 🏰Kasara(Fort)+🐄Godu(cattle) = Kasargod",hard
+21,Indian Cities,Mumbai,🌊 💰 🎬,bombay,"India's financial capital! The city never sleeps — and it handles 70% of India's maritime trade. Named after Mumbadevi, the patron goddess.",easy
+22,Indian Cities,Delhi,🦚 🏛️ ❄️,new delhi,"Capital of India with 3000+ years of history! It has been destroyed and rebuilt 8 times. More trees per km² than any major Indian city.",easy
+23,Indian Cities,Bengaluru,💻 🌧️ 🫘,bangalore,"Silicon Valley of India! The name means 'town of boiled beans' (Benda Kalu Ooru). Home to 40% of India's IT companies.",medium
+24,Indian Cities,Chennai,🎭 🌊 🚂,madras,"India's first railway station opened here in 1853! Marina Beach is the world's longest urban beach at 13km.",medium
+25,Indian Cities,Kolkata,🌉 🎭 🌸,calcutta,"City of Joy! The Howrah Bridge was built WITHOUT a single nut or bolt — held together purely by rivets. Weighs 26,500 tonnes.",medium
+26,Indian Cities,Hyderabad,💎 🍚 🕌,,"Pearl City of India! Hyderabadi Biryani has a 400-year-old recipe. The Charminar was built in 1591 to ward off plague.",easy
+27,Indian Cities,Jaipur,🌸 🏰 🐘,pink city,"The Pink City! Buildings were all painted terracotta pink in 1876 to welcome Prince Albert of Wales. The colour has stuck since.",easy
+28,Indian Cities,Varanasi,🕯️ 🌊 🕉️,benares|kashi,"One of the world's oldest continuously inhabited cities — over 3000 years! Mark Twain called it 'older than history, older than tradition'.",medium
+29,Indian Cities,Amritsar,✨ 🏛️ 💛,,"Home to the Golden Temple (Harmandir Sahib) — the holiest Sikh shrine! The temple serves free food (langar) to 100,000 people daily.",easy
+30,Indian Cities,Goa,🏖️ 🎉 🌴,,"India's smallest state by area! Has more Christian churches per sq km than anywhere in Asia — built during 450 years of Portuguese rule.",easy
+31,Bollywood Movies,Sholay,🔥 🌵 🏇,,"Released in 1975, Sholay ran continuously for 5 YEARS in a Mumbai cinema! 'Kitne aadmi the?' became one of cinema's most quoted lines.",medium
+32,Bollywood Movies,DDLJ,🚂 🌾 ❤️,dilwale dulhania le jayenge|dilwale dulhaniya le jayenge,"Ran for 25 consecutive years at Mumbai's Maratha Mandir! Shah Rukh Khan improvised the iconic outstretched arm scene himself.",easy
+33,Bollywood Movies,3 Idiots,3️⃣ 🤓 🎓,three idiots,"The film that made millions question their career choices! Became Bollywood's highest-grossing film at the time of release (2009).",easy
+34,Bollywood Movies,Dangal,🤼 👨‍👧 🥇,,"Based on the true story of Mahavir Singh Phogat's daughters winning gold at the Commonwealth Games. Aamir Khan gained 25kg for the role!",easy
+35,Bollywood Movies,Lagaan,🌧️ 🏏 🌾,,"Oscar-nominated (2001)! About Indian villagers who challenge British officers to cricket to avoid paying oppressive taxes.",medium
+36,Bollywood Movies,Mughal-E-Azam,👑 💎 🌹,,"One of the most expensive Indian films of 1960 — took 15 years to make! The iconic 'Pyaar Kiya To Darna Kya' scene used 150,000 mirrors.",hard
+37,Bollywood Movies,Dil Chahta Hai,3️⃣ 🧑‍🤝‍🧑 🌊,dil chata hai,"The film that changed how Bollywood portrays male friendship! Farhan Akhtar's directorial debut. Shot in Goa and Sydney.",medium
+38,Bollywood Movies,Queen,👑 ✈️ 🌍,,"Kangana Ranaut won the National Award for Best Actress! A woman travels to Paris and Amsterdam alone for her honeymoon after her fiancé dumps her.",medium
+39,Bollywood Movies,Kuch Kuch Hota Hai,❤️ 🏫 🤧,kkhh,"Karan Johar's debut film (1998) swept 8 Filmfare Awards! SRK wore a skirt-like lungi throughout the college scenes — considered very bold then.",easy
+40,Bollywood Movies,Zindagi Na Milegi Dobara,⏰ ❌ 2️⃣,znmd,"Shot entirely in Spain! Title means 'You won't get life again'. The skydiving, deep-sea diving & tomato-fight scenes were all real.",medium
+41,Hollywood Movies,Titanic,🚢 💔 🌊,,"James Cameron drew all of Jack's sketches himself! The film's production budget ($200M) exceeded the cost of building the actual Titanic.",easy
+42,Hollywood Movies,The Lion King,🦁 👑 🌅,lion king,"Based on Shakespeare's Hamlet! 'Hakuna Matata' means 'No Worries' in Swahili. The film's wildebeest stampede took 3 years to animate.",easy
+43,Hollywood Movies,Harry Potter,🧙 ⚡ 📚,,"J.K. Rowling wrote the first book idea on a train delay! The entire series has sold over 500 million copies — more than the Bible in the same period.",easy
+44,Hollywood Movies,Inception,💤 🌀 🎯,,"Christopher Nolan wrote the script over 10 years! The spinning top at the end was NOT Cobb's totem — his wedding ring was. Watch for it!",hard
+45,Hollywood Movies,The Dark Knight,🦇 🌃 🃏,batman dark knight|batman,"Heath Ledger won a posthumous Oscar for the Joker. He stayed IN CHARACTER between takes and kept a method-acting diary for the role.",medium
+46,Hollywood Movies,Forrest Gump,🏃 🍫 🦐,,"Tom Hanks earned $65M through profit participation! The feather CGI used in opening/closing scenes was considered revolutionary in 1994.",easy
+47,Hollywood Movies,Jurassic Park,🦖 🌿 🧬,,"The T-Rex's iconic roar was crafted from a baby elephant's cry, a tiger's snarl, an alligator's hiss, and a penguin's squawk!",medium
+48,Hollywood Movies,Home Alone,🏠 👦 🎄,,"Macaulay Culkin was only 10 years old! It held the record for highest-grossing comedy film for 27 years. The tarantula was real.",easy
+49,Hollywood Movies,Finding Nemo,🐟 👨 🌊,,"'Nemo' means 'no one' in Latin! Pixar animators got scuba-certified to research marine life. The film made clownfish sales spike 40%.",easy
+50,Hollywood Movies,Avengers Endgame,⏰ 🔙 🦸,endgame|avengers,"Became the highest-grossing film EVER, surpassing Avatar! The 'Portals' scene was filmed over 11 days with 1000+ extras.",medium
+51,Indian Foods,Biryani,🍚 🐑 🌶️,,"Brought to India by Persian traders! The word comes from 'Birian' (fried before cooking). Each Indian city has its own distinct style.",easy
+52,Indian Foods,Masala Dosa,🥞 🥔 🌶️,dosa,"A 2000-year-old South Indian breakfast! The fermentation of rice and lentils makes it probiotic and one of the healthiest fast foods on earth.",easy
+53,Indian Foods,Samosa,🔺 🥔 🫛,,"Originally from Central Asia! Called 'Sanbusak' in Arab cookbooks from the 10th century. It arrived in India via Persian traders in the 13th century.",easy
+54,Indian Foods,Butter Chicken,🧈 🍗 🍛,murgh makhani,"Invented by ACCIDENT in 1947 at Moti Mahal Delhi! A chef mixed leftover tandoori chicken into a tomato-butter sauce. Now it's India's most exported dish.",medium
+55,Indian Foods,Pani Puri,💧 🫙 🌶️,gol gappa|puchka|phuchka,"Called Gol Gappa in Delhi, Puchka in Kolkata, Pani Puri in Mumbai! Said to have originated in ancient Magadha (modern Bihar) 2000+ years ago.",easy
+56,Indian Foods,Idli,☁️ 🥞 🫕,,"Called the world's most perfect breakfast! The 12-hour fermentation makes it rich in probiotics. Ancient Tamil texts from 920 CE mention it.",easy
+57,Indian Foods,Chole Bhature,🫛 💨 🫓,chhole bhature,"A favourite Delhi breakfast! Bhature dough is fermented overnight — the puffiness comes from the trapped steam when deep-fried.",medium
+58,Indian Foods,Rasgulla,⚪ 🍬 🥛,rosogolla,"Kolkata and Odisha have been in a decades-long legal battle over its origin! Odisha finally won the GI tag in 2019. Both are delicious though.",medium
+59,Indian Foods,Pav Bhaji,🍞 🫕 🧈,,"Invented in 1850s Mumbai to feed textile mill workers a quick hot meal! The 'mashing' technique was borrowed from Portuguese cooking.",easy
+60,Indian Foods,Appam,⭕ 🥞 🥥,aapam,"A Kerala breakfast with a spongy centre and lacy crispy edges! The secret is fermented rice batter + coconut milk. Pairs perfectly with stew.",medium
