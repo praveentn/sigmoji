@@ -238,3 +238,22 @@ ACTIVE_GAMES: dict[int, GameSession] = {}
 # Per-channel recently-asked question IDs (to avoid immediate repeats)
 RECENT_IDS: dict[int, set[int]] = {}
 MAX_RECENT = 20   # How many IDs to remember per channel
+
+
+# ── Multi-round sessions ──────────────────────────────────────────────────────
+
+@dataclass
+class MultiRoundSession:
+    """Tracks state for a multi-question (/play rounds=N) game session."""
+    channel_id:    int
+    started_by:    int
+    total_rounds:  int
+    category:      str | None = None
+    current_round: int = 0
+    scores:        dict = field(default_factory=dict)   # user_id → cumulative pts
+    names:         dict = field(default_factory=dict)   # user_id → display_name
+    is_active:     bool = True
+
+
+# Per-channel multi-round sessions: { channel_id -> MultiRoundSession }
+ACTIVE_SESSIONS: dict[int, MultiRoundSession] = {}

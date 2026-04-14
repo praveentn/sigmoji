@@ -1,101 +1,95 @@
 id,category,answer,emojis,answer_alts,fact,difficulty
-1,Kerala Places,Kozhikode,🐔 🧥,calicut,"Vasco da Gama landed here in 1498 — opening Europe's sea route to India! City of Spices & the famous Zamorin kings. 🐔Kozhi(Chicken)+🧥Coat = Kozhikode",medium
-2,Kerala Places,Palakkad,🥛 🌲,palghat,"Gateway to Kerala via the Palakkad Gap in the Western Ghats. Famous for the ancient Palakkad Fort built by Hyder Ali. 🥛Paal(Milk)+🌲Kadu(Forest) = Palakkad",medium
-3,Kerala Places,Wayanad,🌾 🗺️,,"Kerala's only district fully in the Western Ghats! Home to Edakkal Caves with carvings from 6000 BCE. 🌾Vayal(Paddy field)+🗺️Nadu(Land) = Wayanad",easy
-4,Kerala Places,Idukki,🤏 🔑,,"Home to Asia's largest arch dam! The narrow valleys here are so tight that the name literally means 'narrow place'. 🤏Idukku(Narrow/Pinch)+🔑Key = Idukki",hard
-5,Kerala Places,Kottayam,🏰 🏠,,"First fully literate district in India! Also called Land of Letters, Latex & Lakes — rubber and backwaters define it. 🏰Kotta(Fort)+🏠Akam(Inside) = Kottayam",medium
-6,Kerala Places,Kannur,👁️ 🚪,cannanore,"Famous for the mystical Theyyam ritual — a living tradition 2000 years old where performers become gods. 👁️Kannu(Eye)+🚪Ur/Door(Town) = Kannur",medium
-7,Kerala Places,Malappuram,⛰️ 🏯,,"Home to Kottakkal Arya Vaidya Sala, a 100+ year old Ayurvedic institution known worldwide. ⛰️Mala(Hill)+🏯Puram(Fort/City) = Malappuram",medium
-8,Kerala Places,Ponnani,🪙 🐘,,"A historic port town called the 'Mecca of Kerala' for its grand Juma Masjid, one of the oldest mosques in Asia. 🪙Pon(Gold)+🐘Aana/Aani(Elephant) = Ponnani",hard
-9,Kerala Places,Alappuzha,🌊 🛶,alleppey,"The Venice of the East! The Nehru Trophy Boat Race here has been held since 1952. Houseboats are a way of life. 🌊Ala(Wave)+🛶Puzha(River) = Alappuzha",easy
-10,Kerala Places,Thrissur,3️⃣ ⛪,trichur,"Cultural capital of Kerala! The Thrissur Pooram — 100 decorated elephants and thundering percussion — is unmatched anywhere. 3️⃣Thri(Three)+⛪Soor(Divine) = Thrissur",easy
-11,Kerala Places,Aluva,🍮,,"A sweet little town on the Periyar riverbank! The name literally sounds like 'Halwa', the beloved Indian sweet. 🍮 sounds like Halwa → Aluva",easy
-12,Kerala Places,Munnar,3️⃣ ⛰️,,"A misty paradise at 1600m — home to the world's highest tea gardens! Three rivers (Moonu Aar) meet here. 3️⃣Moonu(Three)+⛰️Aar(River/Peak) = Munnar",easy
-13,Kerala Places,Pathanamthitta,🥣 🧱,,"Pilgrimage capital of Kerala and gateway to Sabarimala! Millions of devotees pass through each year. 🥣Pathram(Vessel)+🧱Thitta(Platform) = Pathanamthitta",hard
-14,Kerala Places,Guruvayur,👨‍🏫 🌬️,,"The Guruvayur Sri Krishna Temple is one of India's most visited temples! Elephants here get named after kings of old. 👨‍🏫Guru(Teacher)+🌬️Vayu(Wind God) = Guruvayur",medium
-15,Kerala Places,Kumarakom,👦 🏘️,,"A breathtaking backwater village on Vembanad Lake! Bird sanctuary here is a paradise for migratory birds. 👦Kumaran(Boy/Young man)+🏘️Kom(Village) = Kumarakom",medium
-16,Kerala Places,Kollam,⚡ 🏠,quilon,"Cashew capital of the world! Over 70% of India's cashew is processed here. Also known as Quilon, one of Kerala's oldest ports. ⚡Kol(Power/pole)+🏠Am(place/home) = Kollam",medium
-17,Kerala Places,Varkala,🪨 🌊,,"A cliff-beach town famous for its natural mineral springs — the water here has therapeutic properties! 🪨Varku(Rock/cliff)+🌊Ala(Wave) = Varkala",medium
-18,Kerala Places,Kovalam,🥥 🌊,,"An iconic crescent-shaped beach near Thiruvananthapuram known as the Lighthouse Beach. Kerala tourism was born here! 🥥Kochu(Small)+🌊Alam(Grove/Land) = Kovalam",medium
-19,Kerala Places,Thalassery,🎂 🌊,tellicherry,"Birthplace of the famous Thalassery Biryani AND Kerala circus! Circus arts were developed here in the 1800s. 🎂Thalas(sweet/cake)+🌊Sery(place near sea) = Thalassery",hard
-20,Kerala Places,Kasargod,🏰 🐄,,"Northernmost district of Kerala with 7 languages spoken! Home to Bekal Fort — the largest fort in Kerala. 🏰Kasara(Fort)+🐄Godu(cattle) = Kasargod",hard
-21,Indian Cities,Mumbai,🌊 💰 🎬,bombay,"India's financial capital! The city never sleeps — and it handles 70% of India's maritime trade. Named after Mumbadevi, the patron goddess.",easy
-22,Indian Cities,Delhi,🦚 🏛️ ❄️,new delhi,"Capital of India with 3000+ years of history! It has been destroyed and rebuilt 8 times. More trees per km² than any major Indian city.",easy
-23,Indian Cities,Bengaluru,💻 🌧️ 🫘,bangalore,"Silicon Valley of India! The name means 'town of boiled beans' (Benda Kalu Ooru). Home to 40% of India's IT companies.",medium
+1,Kerala Places,Kozhikode,🐔 🧥,calicut,"Vasco da Gama landed here in 1498! 🐔 Kozhi(Chicken) + 🧥 Coat = Kozhikode",medium
+2,Kerala Places,Palakkad,🥛 🌲,palghat,"Gateway to Kerala via the Palakkad Gap in the Western Ghats. 🥛 Paal(Milk) + 🌲 Kadu(Forest) = Palakkad",medium
+3,Kerala Places,Wayanad,🌾 🗺️,,"Home to Edakkal Caves with carvings from 6000 BCE! 🌾 Vayal(Paddy field) + 🗺️ Nadu(Land) = Wayanad",easy
+4,Kerala Places,Idukki,🤏 🔑,,"Home to Asia's largest arch dam! 🤏 Idukku(Narrow/Pinch) + 🔑 Key = Idukki",hard
+5,Kerala Places,Kottayam,🏰 🏠,,"India's first fully literate district! 🏰 Kotta(Fort) + 🏠 Akam(Inside) = Kottayam",medium
+6,Kerala Places,Kannur,👁️ 🚪,cannanore,"Land of the mystical Theyyam ritual — 2000 years old! 👁️ Kannu(Eye) + 🚪 Ur/Door(Town) = Kannur",medium
+7,Kerala Places,Malappuram,⛰️ 🏯,,"Famous for Kottakkal Arya Vaidya Sala, a 100-year-old Ayurvedic institution. ⛰️ Mala(Hill) + 🏯 Puram(Fort/City) = Malappuram",medium
+8,Kerala Places,Ponnani,🪙 🐘,,"Historic port called the 'Mecca of Kerala' — home to one of Asia's oldest mosques. 🪙 Pon(Gold) + 🐘 Aana(Elephant) = Ponnani",hard
+9,Kerala Places,Alappuzha,🌊 🛶,alleppey,"The Venice of the East! Nehru Trophy Boat Race since 1952. 🌊 Ala(Wave) + 🛶 Puzha(River) = Alappuzha",easy
+10,Kerala Places,Thrissur,3️⃣ ⛪,trichur,"Cultural capital of Kerala — 100 elephants at the famous Pooram! 3️⃣ Thri(Three) + ⛪ Soor(Divine) = Thrissur",easy
+11,Kerala Places,Aluva,🍮,,A sweet little town on the Periyar riverbank! The name sounds exactly like the beloved Indian sweet 'Halwa'! 🍮 Halwa → Aluva,easy
+12,Kerala Places,Munnar,3️⃣ ⛰️,,"Misty paradise at 1600m — home to the world's highest tea gardens! 3️⃣ Moonu(Three) + ⛰️ Aar(River/Peak) = Munnar",easy
+13,Kerala Places,Pathanamthitta,🥣 🧱,,"Pilgrimage capital of Kerala — gateway to Sabarimala! 🥣 Pathram(Vessel) + 🧱 Thitta(Platform) = Pathanamthitta",hard
+14,Kerala Places,Guruvayur,👨‍🏫 🌬️,,"Guruvayur Sri Krishna Temple! Elephants here are named after ancient kings. 👨‍🏫 Guru(Teacher) + 🌬️ Vayu(Wind God) = Guruvayur",medium
+15,Kerala Places,Kumarakom,👦 🏘️,,"Breathtaking backwater village on Vembanad Lake! 👦 Kumaran(Young man) + 🏘️ Kom(Village) = Kumarakom",medium
+16,Kerala Places,Kollam,⚡ 🏠,quilon,"Cashew capital of the world! 70% of India's cashew is processed here. ⚡ Kol(Power/strength) + 🏠 Am(place) = Kollam",medium
+17,Kerala Places,Varkala,🪨 🌊,,"Cliff-beach town with natural mineral springs that have therapeutic properties. 🪨 Varku(Rock/cliff) + 🌊 Ala(Wave) = Varkala",medium
+18,Kerala Places,Kovalam,🥥 🌊,,"Iconic crescent beach near Thiruvananthapuram — Kerala tourism was born here! 🥥 Kochu(Small) + 🌊 Alam(Grove/Land) ≈ Kovalam",medium
+19,Kerala Places,Thalassery,🎂 🎪,tellicherry,"Birthplace of Thalassery Biryani AND Kerala circus! Circus arts were developed here in the 1800s. 🎂 Thalas(sweet/tasty) + 🎪 Sery(place) = Thalassery",hard
+20,Kerala Places,Kasargod,🏯 🐄,,"7 languages spoken in this northernmost Kerala district! Home to Bekal Fort — Kerala's largest. 🏯 Kasara(Fort) + 🐄 Godu(Cattle) = Kasargod",hard
+21,Indian Cities,Mumbai,🌊 💰 🎬,bombay,"India's financial capital handles 70% of maritime trade! Named after Mumbadevi, the patron goddess.",easy
+22,Indian Cities,Delhi,🦚 🏛️ ❄️,new delhi,"Capital of India, 3000+ years of history! Destroyed and rebuilt 8 times. More trees per km² than any major city.",easy
+23,Indian Cities,Bengaluru,💻 🌧️ 🫘,bangalore,"Silicon Valley of India! Name means 'town of boiled beans' (Benda Kalu Ooru).",medium
 24,Indian Cities,Chennai,🎭 🌊 🚂,madras,"India's first railway station opened here in 1853! Marina Beach is the world's longest urban beach at 13km.",medium
-25,Indian Cities,Kolkata,🌉 🎭 🌸,calcutta,"City of Joy! The Howrah Bridge was built WITHOUT a single nut or bolt — held together purely by rivets. Weighs 26,500 tonnes.",medium
-26,Indian Cities,Hyderabad,💎 🍚 🕌,,"Pearl City of India! Hyderabadi Biryani has a 400-year-old recipe. The Charminar was built in 1591 to ward off plague.",easy
-27,Indian Cities,Jaipur,🌸 🏰 🐘,pink city,"The Pink City! Buildings were all painted terracotta pink in 1876 to welcome Prince Albert of Wales. The colour has stuck since.",easy
-28,Indian Cities,Varanasi,🕯️ 🌊 🕉️,benares|kashi,"One of the world's oldest continuously inhabited cities — over 3000 years! Mark Twain called it 'older than history, older than tradition'.",medium
-29,Indian Cities,Amritsar,✨ 🏛️ 💛,,"Home to the Golden Temple (Harmandir Sahib) — the holiest Sikh shrine! The temple serves free food (langar) to 100,000 people daily.",easy
-30,Indian Cities,Goa,🏖️ 🎉 🌴,,"India's smallest state by area! Has more Christian churches per sq km than anywhere in Asia — built during 450 years of Portuguese rule.",easy
-31,Bollywood Movies,Sholay,🔥 🌵 🏇,,"Released in 1975, Sholay ran continuously for 5 YEARS in a Mumbai cinema! 'Kitne aadmi the?' became one of cinema's most quoted lines.",medium
-32,Bollywood Movies,DDLJ,🚂 🌾 ❤️,dilwale dulhania le jayenge|dilwale dulhaniya le jayenge,"Ran for 25 consecutive years at Mumbai's Maratha Mandir! Shah Rukh Khan improvised the iconic outstretched arm scene himself.",easy
-33,Bollywood Movies,3 Idiots,3️⃣ 🤓 🎓,three idiots,"The film that made millions question their career choices! Became Bollywood's highest-grossing film at the time of release (2009).",easy
-34,Bollywood Movies,Dangal,🤼 👨‍👧 🥇,,"Based on the true story of Mahavir Singh Phogat's daughters winning gold at the Commonwealth Games. Aamir Khan gained 25kg for the role!",easy
-35,Bollywood Movies,Lagaan,🌧️ 🏏 🌾,,"Oscar-nominated (2001)! About Indian villagers who challenge British officers to cricket to avoid paying oppressive taxes.",medium
-36,Bollywood Movies,Mughal-E-Azam,👑 💎 🌹,,"One of the most expensive Indian films of 1960 — took 15 years to make! The iconic 'Pyaar Kiya To Darna Kya' scene used 150,000 mirrors.",hard
-37,Bollywood Movies,Dil Chahta Hai,3️⃣ 🧑‍🤝‍🧑 🌊,dil chata hai,"The film that changed how Bollywood portrays male friendship! Farhan Akhtar's directorial debut. Shot in Goa and Sydney.",medium
-38,Bollywood Movies,Queen,👑 ✈️ 🌍,,"Kangana Ranaut won the National Award for Best Actress! A woman travels to Paris and Amsterdam alone for her honeymoon after her fiancé dumps her.",medium
-39,Bollywood Movies,Kuch Kuch Hota Hai,❤️ 🏫 🤧,kkhh,"Karan Johar's debut film (1998) swept 8 Filmfare Awards! SRK wore a skirt-like lungi throughout the college scenes — considered very bold then.",easy
-40,Bollywood Movies,Zindagi Na Milegi Dobara,⏰ ❌ 2️⃣,znmd,"Shot entirely in Spain! Title means 'You won't get life again'. The skydiving, deep-sea diving & tomato-fight scenes were all real.",medium
-41,Hollywood Movies,Titanic,🚢 💔 🌊,,"James Cameron drew all of Jack's sketches himself! The film's production budget ($200M) exceeded the cost of building the actual Titanic.",easy
-42,Hollywood Movies,The Lion King,🦁 👑 🌅,lion king,"Based on Shakespeare's Hamlet! 'Hakuna Matata' means 'No Worries' in Swahili. The film's wildebeest stampede took 3 years to animate.",easy
-43,Hollywood Movies,Harry Potter,🧙 ⚡ 📚,,"J.K. Rowling wrote the first book idea on a train delay! The entire series has sold over 500 million copies — more than the Bible in the same period.",easy
-44,Hollywood Movies,Inception,💤 🌀 🎯,,"Christopher Nolan wrote the script over 10 years! The spinning top at the end was NOT Cobb's totem — his wedding ring was. Watch for it!",hard
-45,Hollywood Movies,The Dark Knight,🦇 🌃 🃏,batman dark knight|batman,"Heath Ledger won a posthumous Oscar for the Joker. He stayed IN CHARACTER between takes and kept a method-acting diary for the role.",medium
-46,Hollywood Movies,Forrest Gump,🏃 🍫 🦐,,"Tom Hanks earned $65M through profit participation! The feather CGI used in opening/closing scenes was considered revolutionary in 1994.",easy
-47,Hollywood Movies,Jurassic Park,🦖 🌿 🧬,,"The T-Rex's iconic roar was crafted from a baby elephant's cry, a tiger's snarl, an alligator's hiss, and a penguin's squawk!",medium
-48,Hollywood Movies,Home Alone,🏠 👦 🎄,,"Macaulay Culkin was only 10 years old! It held the record for highest-grossing comedy film for 27 years. The tarantula was real.",easy
-49,Hollywood Movies,Finding Nemo,🐟 👨 🌊,,"'Nemo' means 'no one' in Latin! Pixar animators got scuba-certified to research marine life. The film made clownfish sales spike 40%.",easy
-50,Hollywood Movies,Avengers Endgame,⏰ 🔙 🦸,endgame|avengers,"Became the highest-grossing film EVER, surpassing Avatar! The 'Portals' scene was filmed over 11 days with 1000+ extras.",medium
-51,Indian Foods,Biryani,🍚 🐑 🌶️,,"Brought to India by Persian traders! The word comes from 'Birian' (fried before cooking). Each Indian city has its own distinct style.",easy
-52,Indian Foods,Masala Dosa,🥞 🥔 🌶️,dosa,"A 2000-year-old South Indian breakfast! The fermentation of rice and lentils makes it probiotic and one of the healthiest fast foods on earth.",easy
-53,Indian Foods,Samosa,🔺 🥔 🫛,,"Originally from Central Asia! Called 'Sanbusak' in Arab cookbooks from the 10th century. It arrived in India via Persian traders in the 13th century.",easy
-54,Indian Foods,Butter Chicken,🧈 🍗 🍛,murgh makhani,"Invented by ACCIDENT in 1947 at Moti Mahal Delhi! A chef mixed leftover tandoori chicken into a tomato-butter sauce. Now it's India's most exported dish.",medium
-55,Indian Foods,Pani Puri,💧 🫙 🌶️,gol gappa|puchka|phuchka,"Called Gol Gappa in Delhi, Puchka in Kolkata, Pani Puri in Mumbai! Said to have originated in ancient Magadha (modern Bihar) 2000+ years ago.",easy
-56,Indian Foods,Idli,☁️ 🥞 🫕,,"Called the world's most perfect breakfast! The 12-hour fermentation makes it rich in probiotics. Ancient Tamil texts from 920 CE mention it.",easy
-57,Indian Foods,Chole Bhature,🫛 💨 🫓,chhole bhature,"A favourite Delhi breakfast! Bhature dough is fermented overnight — the puffiness comes from the trapped steam when deep-fried.",medium
-58,Indian Foods,Rasgulla,⚪ 🍬 🥛,rosogolla,"Kolkata and Odisha have been in a decades-long legal battle over its origin! Odisha finally won the GI tag in 2019. Both are delicious though.",medium
-59,Indian Foods,Pav Bhaji,🍞 🫕 🧈,,"Invented in 1850s Mumbai to feed textile mill workers a quick hot meal! The 'mashing' technique was borrowed from Portuguese cooking.",easy
-60,Indian Foods,Appam,⭕ 🥞 🥥,aapam,"A Kerala breakfast with a spongy centre and lacy crispy edges! The secret is fermented rice batter + coconut milk. Pairs perfectly with stew.",medium
-61,Indian Snacks,Samosa,📐 🥔 🌶️,samosa,"The ultimate triangular pastry stuffed with spiced potatoes and peas. Deep-fried until golden and incredibly crunchy.",medium
-62,Indian Snacks,Vada Pav,🍔 🥔 🇮🇳,vada pav,"The pride of Mumbai! A spicy potato fritter sandwiched in a soft bun with garlic chutney and a fried green chili.",easy
-63,Indian Snacks,Pani Puri,💣 🥗 💧,pani puri,"Crispy hollow spheres filled with chickpeas and potatoes. Dip them in tangy mint water for an explosion of flavor.",hard
-64,Indian Snacks,Dhokla,🟨 🍰 🍛,dhokla,"A savory steamed sponge cake from Gujarat made of fermented gram flour. Light, airy, and tempered with mustard seeds.",medium
-65,Indian Foods,Palak Paneer,🥬 🧀 🥘,palak paneer,"Soft cubes of cottage cheese swimming in a vibrant, creamy spinach gravy. A nutritious powerhouse of flavor.",medium
-66,Indian Foods,Butter Chicken,🍗 🍅 🧈,butter chicken,"Succulent grilled chicken pieces simmered in a velvety tomato and cream sauce. The king of North Indian curries.",medium
-67,Indian Foods,Dal Makhani,🍲 🖤 🧈,dal makhani,"Black lentils and kidney beans slow-cooked overnight with plenty of butter and cream for a rich, smoky taste.",hard
-68,Indian Foods,Biryani,🍚 🍗 🏺,biryani,"Fragrant basmati rice layered with marinated meat and aromatic spices. Each region in India has its own secret version.",hard
-69,International,Pizza Margherita,🍕 🍅 🌿,margherita,"The Italian classic representing the flag: red tomatoes, white mozzarella, and green basil on a thin crust.",medium
-70,International,Sushi Roll,🍣 🍱 🌊,sushi,"Vineigared rice combined with fresh seafood or vegetables, wrapped in seaweed. A masterclass in balance and texture.",hard
-71,International,Tacos,🌮 🥑 🥩,tacos,"Folded corn tortillas packed with seasoned meat, fresh salsa, and creamy avocado. A handheld fiesta.",easy
-72,International,Croissant,🥐 🇫🇷 🧈,croissant,"A buttery, flaky French pastry with hundreds of paper-thin layers. Best enjoyed warm with a coffee.",hard
-73,International,Pad Thai,🍜 🥜 🍋,pad thai,"The quintessential Thai street food. Stir-fried rice noodles with tofu, shrimp, peanuts, and a tangy tamarind sauce.",medium
-74,International,Burger,🍔 🧀 🍟,burger,"A juicy grilled patty topped with melted cheese, lettuce, and onions. The universal symbol of comfort food.",easy
-75,International,Dim Sum,🥟 🥢 ☕,dim sum,"Bite-sized Chinese dumplings served in bamboo steamers. Perfect for sharing during a long brunch.",hard
-76,Desserts,Gulab Jamun,🟠 🍯 🥄,gulab jamun,"Deep-fried milk solids soaked in a warm cardamom and rose water syrup. Like tiny, sweet clouds.",medium
-77,Desserts,Tiramisu,☕ 🍰 🇮🇹,tiramisu,"An elegant Italian dessert made of coffee-soaked ladyfingers layered with rich mascarpone cream.",medium
-78,Desserts,Cheesecake,🍰 🧀 🍓,cheesecake,"A thick, creamy filling on a graham cracker crust. Can be baked or chilled and topped with fruit.",medium
-79,Desserts,Churros,🥢 🍫 🥨,churros,"Spanish fried dough sticks coated in cinnamon sugar and served with a thick chocolate dipping sauce.",easy
-80,Desserts,Baklava,📐 🍯 🥜,baklava,"Middle Eastern pastry made of layers of filo dough, chopped nuts, and held together with honey syrup.",hard
-81,Indian Foods,Masala Dosa,🌯 🥔 ☕,dosa,"A thin, crispy rice crepe stuffed with a savory potato filling. Served with coconut chutney and sambar.",medium
-82,Indian Foods,Chole Bhature,🥖 🍲 🧅,chole bhature,"Fluffy deep-fried bread served with spicy chickpeas. A heavy, soul-satisfying Punjabi classic.",medium
-83,Indian Snacks,Bhel Puri,🥣 🧅 🌶️,bhel puri,"A light snack made of puffed rice, onions, tomatoes, and tangy chutneys. The perfect beach snack.",easy
-84,Indian Snacks,Aloo Tikki,🥔 🥘 🟢,aloo tikki,"Crispy potato patties spiced with ginger and chilies, often topped with yogurt and sweet tamarind sauce.",easy
-85,International Dishes,Ramen,🍜 🥚 🍥,ramen,"Rich, savory broth with chewy wheat noodles, topped with a soft-boiled egg and tender pork belly.",hard
-86,International Dishes,Paella,🥘 🦐 🥘,paella,"A Spanish rice dish flavored with saffron and loaded with seafood, chicken, and vegetables.",hard
-87,International Dishes,Fish and Chips,🐟 🍟 🍋,fish chips,"Crispy beer-battered white fish served with chunky potato fries and tartare sauce.",medium
-88,International Dishes,Gelato,🍦 🍨 🇮🇹,gelato,"Italian-style ice cream that is denser and smoother than regular ice cream with intense flavors.",medium
-89,Desserts,Macarons,🌈 🍪 🇫🇷,macarons,"Delicate almond flour meringue cookies with a soft ganache filling. Known for their vibrant colors.",hard
-90,Desserts,Pancakes,🥞 🍯 🍓,pancakes,"Stack of fluffy griddle cakes topped with a pat of butter and maple syrup. A breakfast favorite.",easy
-91,Indian Foods,Pav Bhaji,🍞 🥘 🧈,pav bhaji,"A thick vegetable mash cooked in butter and spices, served with toasted, butter-slathered buns.",medium
-92,Indian Foods,Idli,⚪ 🥣 🥥,idli,"Soft, fluffy steamed cakes made from fermented rice and lentil batter. The ultimate healthy breakfast.",easy
-93,Indian Snacks,Pakora,🥦 🥨 ☕,pakora,"Vegetables dipped in spiced gram flour batter and deep-fried. The best companion for a rainy day.",easy
-94,International,Falafel,🧆 🥙 🥒,falafel,"Deep-fried balls of ground chickpeas and herbs, usually served in a pita with tahini and salad.",medium
-95,International,Lasagna,🍝 🧀 🍅,lasagna,"Layers of wide pasta, meaty ragu, and creamy béchamel sauce, baked until bubbly and golden.",hard
-96,International,Peking Duck,🦆 🥞 🥢,peking duck,"Prized for its thin, crispy skin, served with thin pancakes, hoisin sauce, and scallions.",hard
-97,Desserts,Brownies,🍫 🍰 🧊,brownies,"Dense, fudgy chocolate squares that sit somewhere between a cake and a cookie in texture.",easy
-98,Desserts,Apple Pie,🥧 🍎 🥧,apple pie,"A classic dessert with a flaky crust and a warm filling of spiced apples and cinnamon.",medium
-99,Indian Foods,Rogan Josh,🥘 🥩 🌶️,rogan josh,"A fragrant Kashmiri lamb curry cooked with alkanet flower and Kashmiri chilies for a deep red color.",hard
-100,Indian Foods,Poha,🥣 🟡 🍋,poha,"Flattened rice sautéed with onions, turmeric, and peanuts. A light and zesty breakfast from Central India.",easy
+25,Indian Cities,Kolkata,🌉 🎭 🌸,calcutta,"City of Joy! Howrah Bridge was built WITHOUT a single nut or bolt — held together purely by rivets.",medium
+26,Indian Cities,Hyderabad,💎 🍚 🕌,,"Pearl City of India! Hyderabadi Biryani has a 400-year-old recipe.",easy
+27,Indian Cities,Jaipur,🌸 🏰 🐘,pink city,"The Pink City! All buildings were painted terracotta pink in 1876 to welcome Prince Albert of Wales.",easy
+28,Indian Cities,Varanasi,🕯️ 🌊 🕉️,benares|kashi,"One of the world's oldest continuously inhabited cities — over 3000 years! Mark Twain called it 'older than history'.",medium
+29,Indian Cities,Amritsar,✨ 🏛️ 💛,,"Home to the Golden Temple! It serves free food (langar) to 100,000 people every single day.",easy
+30,Indian Cities,Goa,🏖️ 🎉 🌴,,"India's smallest state! Has more churches per sq km than anywhere in Asia after 450 years of Portuguese rule.",easy
+31,Bollywood Movies,Sholay,🔥 🌵 🏇,,"Released in 1975, Sholay ran continuously for 5 YEARS in a Mumbai cinema! 'Kitne aadmi the?' is cinema's most quoted line.",medium
+32,Bollywood Movies,DDLJ,🚂 🌾 ❤️,dilwale dulhania le jayenge,"Ran for 25 consecutive years at Mumbai's Maratha Mandir! Shah Rukh Khan improvised the iconic outstretched arm scene.",easy
+33,Bollywood Movies,3 Idiots,3️⃣ 🤓 🎓,three idiots,"Became Bollywood's highest-grossing film at the time! Aamir Khan's character name 'Rancho' still inspires millions.",easy
+34,Bollywood Movies,Dangal,🤼 👨‍👧 🥇,,"Based on the true story of Mahavir Singh Phogat's daughters winning Commonwealth gold. Aamir Khan gained 25kg for the role!",easy
+35,Bollywood Movies,Lagaan,🌧️ 🏏 🌾,,"Oscar-nominated 2001 film! Indian villagers challenge British officers to cricket to avoid paying oppressive taxes.",medium
+36,Bollywood Movies,Mughal-E-Azam,👑 💎 🌹,,"Took 15 years to make! The iconic 'Pyaar Kiya To Darna Kya' scene used 150,000 mirrors.",hard
+37,Bollywood Movies,Dil Chahta Hai,3️⃣ 🧑‍🤝‍🧑 🌊,dil chata hai,"Changed how Bollywood portrays male friendship! Farhan Akhtar's directorial debut. Shot in Goa and Sydney.",medium
+38,Bollywood Movies,Queen,👑 ✈️ 🌍,,"Kangana Ranaut won National Award for Best Actress! Woman travels Paris & Amsterdam alone after fiancé abandons her.",medium
+39,Bollywood Movies,Kuch Kuch Hota Hai,❤️ 🏫 🤧,kkhh,"Karan Johar's debut swept 8 Filmfare Awards! SRK wore a skirt-like lungi throughout the college scenes.",easy
+40,Bollywood Movies,Zindagi Na Milegi Dobara,⏰ ❌ 2️⃣,znmd,"Shot entirely in Spain! Title means 'You won't get life again'. All the adventure scenes — skydiving, bullfight — were real.",medium
+41,Hollywood Movies,Titanic,🚢 💔 🌊,,"James Cameron drew all of Jack's sketches himself! The film's budget exceeded the cost of building the actual Titanic.",easy
+42,Hollywood Movies,The Lion King,🦁 👑 🌅,lion king,"Based on Shakespeare's Hamlet! 'Hakuna Matata' means No Worries in Swahili. The wildebeest stampede took 3 years to animate.",easy
+43,Hollywood Movies,Harry Potter,🧙 ⚡ 📚,,"J.K. Rowling conceived the story on a delayed train! The series has sold over 500 million copies worldwide.",easy
+44,Hollywood Movies,Inception,💤 🌀 🎯,,"Christopher Nolan wrote the script over 10 years! The spinning top wasn't Cobb's totem — his wedding ring was. Watch for it!",hard
+45,Hollywood Movies,The Dark Knight,🦇 🌃 🃏,batman dark knight|batman,"Heath Ledger won a posthumous Oscar for the Joker. He stayed IN CHARACTER between takes and kept a method-acting diary.",medium
+46,Hollywood Movies,Forrest Gump,🏃 🍫 🦐,,"Tom Hanks earned $65M through profit participation! The feather CGI in the opening scene was considered revolutionary.",easy
+47,Hollywood Movies,Jurassic Park,🦖 🌿 🧬,,"The T-Rex's roar was crafted from a baby elephant's cry, a tiger's snarl, an alligator's hiss, and a penguin's squawk!",medium
+48,Hollywood Movies,Home Alone,🏠 👦 🎄,,"Macaulay Culkin was only 10! It held the record for highest-grossing comedy for 27 years. The tarantula was real.",easy
+49,Hollywood Movies,Finding Nemo,🐟 👨 🌊,,"Nemo means 'no one' in Latin! Pixar animators got scuba-certified to research marine life. Clownfish sales spiked 40%.",easy
+50,Hollywood Movies,Avengers Endgame,⏰ 🔙 🦸,endgame|avengers,"Became the highest-grossing film EVER! The 'Portals' scene was filmed over 11 days with 1000+ extras.",medium
+51,Indian Foods,Biryani,👑 🍚 🏺,,"Called the King of Rice Dishes! The word comes from Persian 'Birian' (fried before cooking) + 'Brinja' (rice). 👑 King + 🍚 Rice + 🏺 Royal Pot = Biryani",easy
+52,Indian Foods,Masala Dosa,👩 🏠 🎵,dosa,"Ma(mom) + Sala(room in Urdu) = Masala! Do+Sa = the first two musical notes = Dosa! 👩 Ma + 🏠 Sala + 🎵 Do-Sa = Masala Dosa",medium
+53,Indian Foods,Samosa,🔺 🥔 🫛,,"Originally 'Sanbusak' in 10th-century Arab cookbooks! Its triangular shape IS the clue — the name sounds like 'same-oh-sa'. 🔺 Triangle + 🥔 Potato + 🫛 Peas = Samosa",easy
+54,Indian Foods,Butter Chicken,🧈 🍗,murgh makhani,"Invented by ACCIDENT in 1947! A Delhi chef mixed leftover tandoori chicken into a tomato-butter sauce. Now India's most exported dish. 🧈 Makhan(Butter) + 🍗 Murgh(Chicken) = Butter Chicken",medium
+55,Indian Foods,Pani Puri,💧 🎈,gol gappa|puchka|phuchka,"Called Gol Gappa in Delhi, Puchka in Kolkata! Said to originate in ancient Magadha 2000+ years ago. 💧 Pani(Water) + 🎈 Puri(hollow balloon-bread) = Pani Puri",easy
+56,Indian Foods,Idli,🕌 🥋,,"Ancient Tamil texts from 920 CE mention it! The 12-hour fermentation makes it probiotic. 🕌 Id(Eid festival, sounds like 'Id') + 🥋 Li(Lee, as in Bruce Lee) = Id-Li = Idli",easy
+57,Indian Foods,Chole Bhature,🫘 💨,chhole bhature,"A Delhi power breakfast! Bhature dough ferments overnight — the puffiness comes from steam trapped when deep-fried. 🫘 Chole(Chickpeas) + 💨 Bhature(Puffed up) = Chole Bhature",medium
+58,Indian Foods,Rasgulla,💧 ⚽,rosogolla,"Kolkata & Odisha fought a decades-long legal battle over its origin! Odisha won the GI tag in 2019. 💧 Ras(Juice/Essence in Bengali) + ⚽ Gulla(Ball) = Rasgulla",medium
+59,Indian Foods,Pav Bhaji,🍞 🥗,,"Invented in 1850s Mumbai to feed textile mill workers quickly! 🍞 Pav(Bread, from Portuguese 'pão') + 🥗 Bhaji(Vegetable mash) = Pav Bhaji",easy
+60,Indian Foods,Appam,🧔 🌅,aapam,"A Kerala breakfast with a spongy centre and lacy crispy edges! 🧔 Appa(Father in Tamil) + 🌅 Morning = Appa's breakfast = Appam",medium
+61,Indian Foods,Palak Paneer,🥬 🧀,palak paneer,"Spinach + fresh cheese — a nutritious powerhouse! 🥬 Palak(Spinach in Hindi) + 🧀 Paneer(Fresh cheese in Hindi/Persian) = Palak Paneer",easy
+62,Indian Foods,Dal Makhani,🫘 🧈,dal makhani,"Black lentils slow-cooked overnight in butter and cream. 🫘 Dal(Lentils in Hindi) + 🧈 Makhani(Buttery, from Makhan=butter) = Dal Makhani",hard
+63,Indian Foods,Rogan Josh,🛢️ 🔥,,"A fragrant Kashmiri lamb curry! 🛢️ Rogan(Fat/Oil in Persian) + 🔥 Josh(Heat/Passion in Persian & Urdu) = Rogan Josh",hard
+64,Indian Foods,Poha,🐻 😄,,"Flattened rice sautéed with onions and peanuts — a light Central India breakfast. 🐻 Poh(like Winnie-the-Pooh!) + 😄 Ha(laughter) = Po-Ha = Poha!",easy
+65,Indian Foods,Kadala Curry,🖤 🥥,,"A Kerala breakfast staple served with Puttu or Appam! 🖤 Kadala(Black chickpeas in Malayalam) + 🥥 Coconut gravy = Kadala Curry",medium
+66,Indian Snacks,Vada Pav,🤝 🍞,,"Mumbai's most beloved street food — eaten by millions daily! 🤝 Vada/Wada(Promise in Hindi) + 🍞 Pav(Bread, from Portuguese 'pão') = Vada Pav",easy
+67,Indian Snacks,Dhokla,🔨 🎵,,"A Gujarati steamed sponge cake! Light, airy and tempered with mustard seeds. 🔨 Dhok(Knock/press in some dialects) + 🎵 La(the musical note La!) = Dhok-La = Dhokla",medium
+68,Indian Snacks,Bhel Puri,🔔 🎈,bhel puri,"The perfect Mumbai beach snack — puffed rice with chutneys! 🔔 Bhel(sounds exactly like Bell!) + 🎈 Puri(hollow balloon-sphere) = Bhel Puri",easy
+69,Indian Snacks,Aloo Tikki,🥔 🪙,aloo tikki,"Crispy potato patties — Delhi's most popular street snack! 🥔 Aloo(Potato in Hindi) + 🪙 Tikki(coin-shaped patty) = Aloo Tikki",easy
+70,Indian Snacks,Pakora,🎒 ☀️,,"Vegetables in spiced batter, deep-fried to crispy perfection — perfect for a rainy day! 🎒 Pako(Pack/bundle) + ☀️ Ra(like Ra the sun god, or 'ra' suffix) = Pakora",medium
+71,International Dishes,Ramen,☀️ 👨,,"Rich, savory broth with chewy noodles! ☀️ Ra(the Egyptian sun god!) + 👨 Men(also means 'noodles' in Japanese!) = Ra-Men = Ramen!",hard
+72,International Dishes,Tiramisu,⬆️ 🫵 ☕,,"The name literally means 'Pick me up' in Italian! ⬆️ Tira(pull/lift in Italian) + 🫵 Mi(me) + ☕ Su(up) — coffee lifts your spirit = Tiramisu!",medium
+73,International Dishes,Croissant,✝️ 😇,,"Originated in Austria, refined in France! ✝️ Crois(Cross in French — 'croix') + 😇 Sant(Saint in French) = Crois-Sant = Croissant!",hard
+74,International Dishes,Pad Thai,📋 👔,pad thai,"Thailand's national dish! 📋 Pad(Notepad/Pad) + 👔 Thai(sounds exactly like a necktie = 'Thai'!) = Pad-Thai = Pad Thai!",medium
+75,International Dishes,Burger,🏰 🥩,,Named after Hamburg, Germany! 🏰 Burg(Castle/fortress in German — as in Ham-BURG!) + 🥩 Er(meat suffix) = Burg-Er = Burger!,easy
+76,International Dishes,Dim Sum,💫 ❤️,,"Cantonese for 'touch the heart'! Bite-sized dumplings in bamboo steamers for long brunches. 💫 Dim(點 = to touch/dot in Cantonese) + ❤️ Sum(心 = heart in Cantonese) = Dim Sum!",hard
+77,International Dishes,Falafel,🎵 🎵 🌿,,"From the Middle East — deep-fried chickpea balls in a pita! 🎵 Fa(the 4th musical note, Do Re Mi FA) + 🎵 La(La!) + 🌿 Fel(herb/greenery) = Fa-La-Fel = Falafel! (like Fa La La!)",medium
+78,International Dishes,Lasagna,🎵 😇 👍,,"Layers of pasta, ragu and béchamel baked until golden! 🎵 La(musical note La!) + 😇 San(Saint, 'sant') + 👍 Ya(Yes!) = La-San-Ya = Lasagna!",hard
+79,International Dishes,Paella,👨 👩,,"Spain's most famous rice dish, loaded with seafood! 👨 Pa(Pa/Dad!) + 👩 Ella(She/Her in Spanish!) = Pa + Ella = Paella!",medium
+80,International Dishes,Peking Duck,👀 👑 🦆,,"Prized for its crispy skin with thin pancakes and hoisin sauce. 👀 Peek(Peek-a-boo!) + 👑 King(King!) + 🦆 Duck = Peeking-King-Duck = Peking Duck!",medium
+81,International Dishes,Fish and Chips,🎣 💻,,Britain's most beloved takeaway! 🎣 Fish(Fishing rod) + 💻 Chips(Computer chips!) = Fish and Chips! (Not THOSE chips!),easy
+82,International Dishes,Gelato,🧊 🚶,,"Italian ice cream denser and more intense than regular ice cream! 🧊 Gela(Frozen/cold in Italian — gelato literally means 'frozen'!) + 🚶 To(To-go in Italian) = Gelato!",medium
+83,International Dishes,Sushi Roll,🍶 🐟 🎲,sushi,"Vinegared rice with fresh seafood wrapped in seaweed! 🍶 Su(Vinegar in Japanese — the key ingredient!) + 🐟 Shi(Fish, 'shì' in Chinese) + 🎲 Roll = Su-Shi-Roll = Sushi Roll!",hard
+84,International Dishes,Tacos,🥩 🌽 🌶️,,"Mexico's most iconic street food in a folded corn tortilla! 🥩 Meat + 🌽 Corn(Taco shells are made of corn!) + 🌶️ Chili = Tacos! (Yes, we dodged the taco emoji!)",easy
+85,International Dishes,Pizza Margherita,🍕 🌼,margherita,"Created in 1889 for Italy's Queen Margherita! The colours match the Italian flag: red tomato, white mozzarella, green basil. 🍕 Pizza + 🌼 Margherita(Daisy flower in Italian — also a queen's name!) = Pizza Margherita!",medium
+86,Desserts,Gulab Jamun,🌹 🫐,gulab jamun,"Deep-fried milk solids soaked in cardamom & rose water syrup! 🌹 Gulab(Rose in Persian/Urdu — 'Gul'=flower) + 🫐 Jamun(Java plum berry — a real dark purple fruit!) = Gulab Jamun!",medium
+87,Desserts,Tiramisu,⬆️ 🫵 ☕,,"Elegant Italian dessert of coffee-soaked ladyfingers and mascarpone cream! ⬆️ Tira(Pull up!) + 🫵 Mi(Me!) + ☕ Su(Up — powered by espresso!) = Pick Me Up = Tiramisu!",medium
+88,Desserts,Cheesecake,🧀 🎂,cheesecake,"A thick creamy filling on a crunchy graham cracker crust! 🧀 Cheese + 🎂 Cake = Cheesecake! (The simplest phonetic puzzle in history!)",easy
+89,Desserts,Churros,🐑 ⭕,,"Spanish fried dough sticks in cinnamon sugar with chocolate sauce! 🐑 Churra(a Spanish sheep breed whose RIBBED HORNS look exactly like churros!) + ⭕ Os(the circular cross-section) = Churros!",medium
+90,Desserts,Baklava,🌋 🍯,,"Middle Eastern pastry of filo dough, nuts and honey syrup! 🌋 Bak + LAVA(the word literally contains LAVA!) + 🍯 Honey = Bak-LAVA! = Baklava!",hard
+91,Desserts,Macarons,🦜 🏃,,"Delicate French almond meringue cookies! 🦜 Maca(Macaw — the vibrant parrot, just as colourful as macarons!) + 🏃 Rons(runs!) = Maca-Rons = Macarons!",hard
+92,Desserts,Pancakes,🍳 🎂,,"Stack of fluffy griddle cakes with butter and maple syrup! 🍳 Pan(the pan it's cooked in!) + 🎂 Cakes = Pan-Cakes = Pancakes!",easy
+93,Desserts,Brownies,🟫 🍫,,"Dense, fudgy chocolate squares! 🟫 Brown(the colour — and their whole identity!) + 🍫 Chocolate = Brown-ies = Brownies!",easy
+94,Desserts,Apple Pie,🍎 🔢,apple pie,"As American as... well, you know! 🍎 Apple + 🔢 Pi(π = 3.14159... the mathematical constant! Pi sounds like Pie!) = Apple Pi(e)!",medium
