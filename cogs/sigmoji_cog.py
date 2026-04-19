@@ -315,6 +315,13 @@ class SigmojiCog(commands.Cog):
                 await channel.send(embed=embed)
             except Exception as exc:
                 log.warning("Could not send final standings: %s", exc)
+            # ── Also send all-time global leaderboard ─────────────────────────
+            try:
+                lb_rows = await db.get_leaderboard(limit=10)
+                if lb_rows:
+                    await channel.send(embed=self._build_global_lb_embed(lb_rows))
+            except Exception as exc:
+                log.warning("Could not send global leaderboard: %s", exc)
         else:
             # ── More rounds — show intermediate standings, then next round ────
             if ms.scores:
@@ -621,6 +628,24 @@ class SigmojiCog(commands.Cog):
         if not final and ms.current_round < ms.total_rounds:
             embed.set_footer(text=f"⏳ Round {ms.current_round + 1} starting soon...")
 
+        return embed
+
+    @staticmethod
+    def _build_global_lb_embed(rows: list[dict]) -> discord.Embed:
+        from utils.achievements import get_level
+        MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
+        lines = []
+        for i, row in enumerate(rows, 1):
+            pos = MEDALS.get(i, f"`#{i:>2}`")
+            _, lv_name, _ = get_level(row["xp"])
+            name = discord.utils.escape_markdown(row["username"])
+            lines.append(f"{pos}  **{name}**  ·  **{row['total_wins']}** wins  _{lv_name}_")
+        embed = discord.Embed(
+            title="🌍  All-Time Leaderboard",
+            description="\n".join(lines),
+            colour=0xFFD700,
+        )
+        embed.set_footer(text="Use /leaderboard to view anytime  •  /play to climb!")
         return embed
 
     @staticmethod
