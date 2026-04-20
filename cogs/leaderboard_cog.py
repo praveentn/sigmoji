@@ -17,7 +17,6 @@ from utils.achievements import get_level
 COL_LB   = 0x7289DA
 COL_RANK = 0xFAA61A
 
-# Medal emojis for top 3
 MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
 
 
@@ -30,6 +29,16 @@ def _bar(value: int, max_value: int, length: int = 10) -> str:
         return "░" * length
     filled = max(1, int((value / max_value) * length))
     return "█" * filled + "░" * (length - filled)
+
+
+async def _require_guild(ctx: discord.ApplicationContext) -> bool:
+    if ctx.guild_id is None:
+        await ctx.respond(
+            "❌ Sigmoji commands can only be used inside a server, not in DMs.",
+            ephemeral=True,
+        )
+        return False
+    return True
 
 
 class LeaderboardCog(commands.Cog):
@@ -61,6 +70,9 @@ class LeaderboardCog(commands.Cog):
             default=None,
         ),
     ) -> None:
+        if not await _require_guild(ctx):
+            return
+
         await ctx.defer()
 
         resolved_cat = None
@@ -73,7 +85,8 @@ class LeaderboardCog(commands.Cog):
                 )
                 return
 
-        rows = await db.get_leaderboard(category=resolved_cat, limit=10)
+        guild_id = ctx.guild_id
+        rows = await db.get_leaderboard(guild_id, category=resolved_cat, limit=10)
 
         title = (
             f"🏆  Top Players — {resolved_cat}"
@@ -109,12 +122,11 @@ class LeaderboardCog(commands.Cog):
             colour=COL_LB,
         )
 
-        # Show the requester's own rank at the bottom
-        own_rank = await db.get_player_rank(ctx.author.id, resolved_cat)
-        own_player = await db.get_player(ctx.author.id)
+        own_rank   = await db.get_player_rank(guild_id, ctx.author.id, resolved_cat)
+        own_player = await db.get_player(guild_id, ctx.author.id)
         if own_player:
             own_wins = (
-                (await db.get_category_stats(ctx.author.id)).get(resolved_cat, 0)
+                (await db.get_category_stats(guild_id, ctx.author.id)).get(resolved_cat, 0)
                 if resolved_cat
                 else own_player["total_wins"]
             )
@@ -142,9 +154,14 @@ class LeaderboardCog(commands.Cog):
             default=None,
         ),
     ) -> None:
+        if not await _require_guild(ctx):
+            return
+
         await ctx.defer(ephemeral=True)
-        target = user or ctx.author
-        player = await db.get_player(target.id)
+
+        guild_id = ctx.guild_id
+        target   = user or ctx.author
+        player   = await db.get_player(guild_id, target.id)
 
         if player is None:
             msg = (
@@ -155,12 +172,11 @@ class LeaderboardCog(commands.Cog):
             await ctx.followup.send(msg, ephemeral=True)
             return
 
-        rank     = await db.get_player_rank(target.id)
+        rank     = await db.get_player_rank(guild_id, target.id)
         wins     = player["total_wins"]
         _, lvl_name, lvl_emoji = get_level(player["xp"])
 
-        # Top players for comparison
-        top_rows = await db.get_leaderboard(limit=10)
+        top_rows = await db.get_leaderboard(guild_id, limit=10)
         max_wins = top_rows[0]["total_wins"] if top_rows else 1
 
         embed = discord.Embed(
@@ -169,23 +185,10 @@ class LeaderboardCog(commands.Cog):
         )
         embed.set_thumbnail(url=target.display_avatar.url)
 
-        embed.add_field(
-            name="Global Rank",
-            value=f"**#{rank}**",
-            inline=True,
-        )
-        embed.add_field(
-            name="Total Wins",
-            value=f"**{wins}**",
-            inline=True,
-        )
-        embed.add_field(
-            name="Level",
-            value=f"{lvl_emoji} **{lvl_name}**",
-            inline=True,
-        )
+        embed.add_field(name="Global Rank", value=f"**#{rank}**",          inline=True)
+        embed.add_field(name="Total Wins",  value=f"**{wins}**",           inline=True)
+        embed.add_field(name="Level",       value=f"{lvl_emoji} **{lvl_name}**", inline=True)
 
-        # Who's just above?
         if top_rows and rank > 1:
             ahead = None
             for r in top_rows:

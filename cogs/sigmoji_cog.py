@@ -33,23 +33,34 @@ from utils.achievements import ACHIEVEMENTS, get_level, xp_bar, xp_progress, MAX
 
 log = logging.getLogger("sigmoji.game")
 
-# How long (seconds) before the bot reveals the answer automatically
 ROUND_TIMEOUT = 60
 
-# ── Embed colour constants ─────────────────────────────────────────────────────
-COL_GAME    = 0x7289DA   # Blurple  – game start
-COL_WIN     = 0x43B581   # Green    – winner
-COL_TIMEOUT = 0xF04747   # Red      – time up / skip
-COL_HINT    = 0xFAA61A   # Gold     – hint
+COL_GAME    = 0x7289DA
+COL_WIN     = 0x43B581
+COL_TIMEOUT = 0xF04747
+COL_HINT    = 0xFAA61A
 
-# Difficulty display helpers
 DIFF_EMOJI = {"easy": "🟢", "medium": "🟡", "hard": "🔴"}
 DIFF_LABEL = {"easy": "Easy",  "medium": "Medium",  "hard": "Hard"}
+
+
+# ── Guild guard ───────────────────────────────────────────────────────────────
+
+async def _require_guild(ctx: discord.ApplicationContext) -> bool:
+    """Return True if the command is used inside a guild; respond and return False otherwise."""
+    if ctx.guild_id is None:
+        await ctx.respond(
+            "❌ Sigmoji commands can only be used inside a server, not in DMs.",
+            ephemeral=True,
+        )
+        return False
+    return True
 
 
 # ── Achievement check helper ──────────────────────────────────────────────────
 
 async def _check_achievements(
+    guild_id: int,
     user_id: int,
     player: dict,
     elapsed: float,
@@ -60,12 +71,12 @@ async def _check_achievements(
 ) -> None:
     """Evaluate all win-triggered achievements and announce any new unlocks."""
 
-    earned_achievements = await db.get_achievements(user_id)
+    earned_achievements = await db.get_achievements(guild_id, user_id)
     newly_unlocked: list[dict] = []
 
     async def try_unlock(achievement_id: str) -> None:
         if achievement_id not in earned_achievements:
-            newly = await db.unlock_achievement(user_id, achievement_id)
+            newly = await db.unlock_achievement(guild_id, user_id, achievement_id)
             if newly:
                 newly_unlocked.append(ACHIEVEMENTS[achievement_id])
 
@@ -73,7 +84,6 @@ async def _check_achievements(
     streak     = player["current_streak"]
     hour       = time.localtime().tm_hour
 
-    # Win milestones
     if total_wins >= 1:    await try_unlock("first_win")
     if total_wins >= 5:    await try_unlock("wins_5")
     if total_wins >= 25:   await try_unlock("wins_25")
@@ -81,44 +91,36 @@ async def _check_achievements(
     if total_wins >= 500:  await try_unlock("wins_500")
     if total_wins >= 1000: await try_unlock("wins_1000")
 
-    # Speed
     if elapsed < 10: await try_unlock("speed_10")
     if elapsed < 5:  await try_unlock("speed_5")
     if elapsed < 3:  await try_unlock("speed_3")
 
-    # Streak
     if streak >= 3:   await try_unlock("streak_3")
     if streak >= 7:   await try_unlock("streak_7")
     if streak >= 30:  await try_unlock("streak_30")
     if streak >= 100: await try_unlock("streak_100")
 
-    # Category mastery
-    cat_stats = await db.get_category_stats(user_id)
+    cat_stats = await db.get_category_stats(guild_id, user_id)
     cat_wins  = cat_stats.get(category, 0)
     if cat_wins >= 10: await try_unlock("cat_master")
     if cat_wins >= 50: await try_unlock("cat_expert")
 
-    # All categories
     all_cats    = set(GameData().get_categories())
     played_cats = set(cat_stats.keys())
     if all_cats and all_cats.issubset(played_cats):
         await try_unlock("cat_all")
 
-    # Hint-free wins
     if player["hint_free_wins"] >= 10: await try_unlock("no_hints_10")
     if hints_used == 0 and difficulty == "hard":
         await try_unlock("hint_free_hard")
 
-    # Time of day
     if 0 <= hour < 4: await try_unlock("night_owl")
     if hour < 7:      await try_unlock("early_bird")
 
-    # Level achievements
     level_idx, _, _ = get_level(player["xp"])
     if level_idx >= 5:         await try_unlock("level_5")
     if level_idx >= MAX_LEVEL: await try_unlock("level_max")
 
-    # ── Announce new achievements ─────────────────────────────────────────────
     for ach in newly_unlocked:
         tier_colour = {"bronze": 0xCD7F32, "silver": 0xC0C0C0,
                        "gold": 0xFFD700, "diamond": 0xB9F2FF}.get(ach["tier"], 0x7289DA)
@@ -144,7 +146,7 @@ class SigmojiCog(commands.Cog):
     def __init__(self, bot: discord.Bot) -> None:
         self.bot       = bot
         self.game_data = GameData()
-        self._lock     = asyncio.Lock()   # prevents double-wins on fast answers
+        self._lock     = asyncio.Lock()
 
     # ── Autocomplete ──────────────────────────────────────────────────────────
 
@@ -177,6 +179,9 @@ class SigmojiCog(commands.Cog):
             max_value=20,
         ),
     ) -> None:
+        if not await _require_guild(ctx):
+            return
+
         cid = ctx.channel_id
 
         if cid in ACTIVE_GAMES or cid in ACTIVE_SESSIONS:
@@ -187,7 +192,6 @@ class SigmojiCog(commands.Cog):
             )
             return
 
-        # Resolve category
         resolved_cat = None
         if category:
             resolved_cat = self.game_data.normalise_category(category)
@@ -200,7 +204,6 @@ class SigmojiCog(commands.Cog):
                 return
 
         if rounds == 1:
-            # ── Single-question mode (no session overhead) ────────────────────
             recent   = RECENT_IDS.get(cid, set())
             question = self.game_data.get_question(resolved_cat, exclude_ids=recent)
             if question is None:
@@ -217,14 +220,13 @@ class SigmojiCog(commands.Cog):
 
             embed = self._build_game_embed(question)
             await ctx.respond(embed=embed)
-            log.info("Game started | channel=%d | answer=%s", cid, question["answer"])
+            log.info("Game started | guild=%d | channel=%d | answer=%s", ctx.guild_id, cid, question["answer"])
 
             session.timeout_task = asyncio.create_task(
-                self._timeout(cid, ctx.channel)
+                self._timeout(cid, ctx.channel, ctx.guild_id)
             )
 
         else:
-            # ── Multi-round session mode ───────────────────────────────────────
             ms = MultiRoundSession(
                 channel_id=cid,
                 started_by=ctx.author.id,
@@ -237,14 +239,13 @@ class SigmojiCog(commands.Cog):
             await ctx.respond(
                 f"🎮 Starting a **{rounds}-round** Sigmoji session{cat_label}! Get ready..."
             )
-            await self._launch_round(cid, ctx.channel)
+            await self._launch_round(cid, ctx.channel, ctx.guild_id)
 
     # ── Multi-round helpers ───────────────────────────────────────────────────
 
     async def _launch_round(
-        self, channel_id: int, channel: discord.abc.Messageable
+        self, channel_id: int, channel: discord.abc.Messageable, guild_id: int
     ) -> None:
-        """Pick a question and start the next round of a multi-round session."""
         ms = ACTIVE_SESSIONS.get(channel_id)
         if ms is None or not ms.is_active:
             return
@@ -274,31 +275,26 @@ class SigmojiCog(commands.Cog):
         await channel.send(embed=embed)
 
         session.timeout_task = asyncio.create_task(
-            self._timeout(channel_id, channel)
+            self._timeout(channel_id, channel, guild_id)
         )
         log.info(
-            "Round %d/%d | channel=%d | answer=%s",
-            ms.current_round, ms.total_rounds, channel_id, question["answer"],
+            "Round %d/%d | guild=%d | channel=%d | answer=%s",
+            ms.current_round, ms.total_rounds, guild_id, channel_id, question["answer"],
         )
 
     async def _maybe_continue_session(
         self,
         channel_id: int,
         channel: discord.abc.Messageable,
+        guild_id: int,
         winner_id: int | None = None,
         winner_name: str | None = None,
         round_points: int = 0,
     ) -> None:
-        """
-        Called after every round ends (win / skip / timeout).
-        If a multi-round session is active: records the score, shows standings,
-        then either starts the next round or announces the final results.
-        """
         ms = ACTIVE_SESSIONS.get(channel_id)
         if ms is None or not ms.is_active:
             return
 
-        # Record this round's points
         if winner_id is not None and round_points > 0:
             ms.scores[winner_id] = ms.scores.get(winner_id, 0) + round_points
             if winner_name:
@@ -307,7 +303,6 @@ class SigmojiCog(commands.Cog):
         await asyncio.sleep(4)
 
         if ms.current_round >= ms.total_rounds:
-            # ── All rounds done — final standings ────────────────────────────
             ms.is_active = False
             ACTIVE_SESSIONS.pop(channel_id, None)
             embed = self._build_standings_embed(ms, final=True)
@@ -315,15 +310,13 @@ class SigmojiCog(commands.Cog):
                 await channel.send(embed=embed)
             except Exception as exc:
                 log.warning("Could not send final standings: %s", exc)
-            # ── Also send all-time global leaderboard ─────────────────────────
             try:
-                lb_rows = await db.get_leaderboard(limit=10)
+                lb_rows = await db.get_leaderboard(guild_id, limit=10)
                 if lb_rows:
                     await channel.send(embed=self._build_global_lb_embed(lb_rows))
             except Exception as exc:
                 log.warning("Could not send global leaderboard: %s", exc)
         else:
-            # ── More rounds — show intermediate standings, then next round ────
             if ms.scores:
                 try:
                     embed = self._build_standings_embed(ms, final=False)
@@ -333,7 +326,7 @@ class SigmojiCog(commands.Cog):
                     pass
 
             try:
-                await self._launch_round(channel_id, channel)
+                await self._launch_round(channel_id, channel, guild_id)
             except Exception as exc:
                 log.error("Failed to launch next round: %s", exc)
                 ACTIVE_SESSIONS.pop(channel_id, None)
@@ -342,6 +335,9 @@ class SigmojiCog(commands.Cog):
 
     @discord.slash_command(name="hint", description="💡 Reveal one letter of the answer")
     async def hint(self, ctx: discord.ApplicationContext) -> None:
+        if not await _require_guild(ctx):
+            return
+
         cid     = ctx.channel_id
         session = ACTIVE_GAMES.get(cid)
 
@@ -375,15 +371,30 @@ class SigmojiCog(commands.Cog):
 
     @discord.slash_command(name="skip", description="⏭️ Give up and reveal the answer")
     async def skip(self, ctx: discord.ApplicationContext) -> None:
+        if not await _require_guild(ctx):
+            return
+
         cid = ctx.channel_id
 
         async with self._lock:
             session = ACTIVE_GAMES.pop(cid, None)
 
         if not session:
-            # Between rounds of a multi-round session?
-            ms = ACTIVE_SESSIONS.pop(cid, None)
+            # Between rounds of a multi-round session — check permission before cancelling
+            ms = ACTIVE_SESSIONS.get(cid)
             if ms:
+                is_starter  = ctx.author.id == ms.started_by
+                has_mod_perm = (
+                    isinstance(ctx.author, discord.Member)
+                    and ctx.author.guild_permissions.manage_messages
+                )
+                if not is_starter and not has_mod_perm:
+                    await ctx.respond(
+                        "⏭️ Only the player who started this session (or a moderator) can cancel it.",
+                        ephemeral=True,
+                    )
+                    return
+                ACTIVE_SESSIONS.pop(cid, None)
                 ms.is_active = False
                 await ctx.respond("⏭️ Session cancelled.")
             else:
@@ -405,7 +416,7 @@ class SigmojiCog(commands.Cog):
         await ctx.respond(embed=embed)
 
         asyncio.create_task(
-            self._maybe_continue_session(cid, ctx.channel)
+            self._maybe_continue_session(cid, ctx.channel, ctx.guild_id)
         )
 
     # ── /categories ───────────────────────────────────────────────────────────
@@ -434,6 +445,8 @@ class SigmojiCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
         if message.author.bot:
+            return
+        if message.guild is None:
             return
         if message.content.startswith("/"):
             return
@@ -469,7 +482,10 @@ class SigmojiCog(commands.Cog):
             elapsed, won_session.question["difficulty"], won_session.hints_used
         )
 
+        guild_id = message.guild.id
+
         updated_player, daily_bonus = await db.record_win(
+            guild_id   = guild_id,
             user_id    = message.author.id,
             username   = message.author.display_name,
             category   = won_session.question["category"],
@@ -485,7 +501,6 @@ class SigmojiCog(commands.Cog):
         except Exception:
             pass
 
-        # Detect whether a next round is coming (for footer text)
         ms = ACTIVE_SESSIONS.get(cid)
         next_round_coming = (
             ms is not None
@@ -500,23 +515,22 @@ class SigmojiCog(commands.Cog):
         await message.channel.send(embed=embed)
 
         log.info(
-            "Round won | user=%s | answer=%s | elapsed=%.1fs | pts=%d",
-            message.author, won_session.question["answer"], elapsed, points,
+            "Round won | guild=%d | user=%s | answer=%s | elapsed=%.1fs | pts=%d",
+            guild_id, message.author, won_session.question["answer"], elapsed, points,
         )
 
-        # Continue multi-round session (non-blocking)
         asyncio.create_task(
             self._maybe_continue_session(
-                cid, message.channel,
+                cid, message.channel, guild_id,
                 winner_id=message.author.id,
                 winner_name=message.author.display_name,
                 round_points=points,
             )
         )
 
-        # Check achievements (fire-and-forget)
         asyncio.create_task(
             _check_achievements(
+                guild_id   = guild_id,
                 user_id    = message.author.id,
                 player     = updated_player,
                 elapsed    = elapsed,
@@ -529,25 +543,24 @@ class SigmojiCog(commands.Cog):
 
     # ── Timeout coroutine ─────────────────────────────────────────────────────
 
-    async def _timeout(self, channel_id: int, channel: discord.abc.Messageable) -> None:
-        # ── Phase 1: wait until 30 s remain ──────────────────────────────────
+    async def _timeout(
+        self, channel_id: int, channel: discord.abc.Messageable, guild_id: int
+    ) -> None:
         await asyncio.sleep(ROUND_TIMEOUT - 30)
 
         if channel_id not in ACTIVE_GAMES or not ACTIVE_GAMES[channel_id].is_active:
-            return   # already won/skipped
+            return
 
         try:
             await channel.send("⏰ **30 seconds remaining!** Type your answer now!")
         except Exception:
             pass
 
-        # ── Phase 2: wait until 3 s remain ───────────────────────────────────
         await asyncio.sleep(27)
 
         if channel_id not in ACTIVE_GAMES or not ACTIVE_GAMES[channel_id].is_active:
             return
 
-        # ── Phase 3: 3 / 2 / 1 countdown ─────────────────────────────────────
         for count in (3, 2, 1):
             try:
                 await channel.send(f"⏳ **{count}...**")
@@ -555,12 +568,11 @@ class SigmojiCog(commands.Cog):
                 pass
             await asyncio.sleep(1)
 
-        # ── Time's up! ────────────────────────────────────────────────────────
         async with self._lock:
             session = ACTIVE_GAMES.pop(channel_id, None)
 
         if not session:
-            return   # won during the countdown
+            return
 
         session.is_active = False
         embed = self._build_reveal_embed(
@@ -575,7 +587,7 @@ class SigmojiCog(commands.Cog):
             log.warning("Could not send timeout message: %s", exc)
 
         asyncio.create_task(
-            self._maybe_continue_session(channel_id, channel)
+            self._maybe_continue_session(channel_id, channel, guild_id)
         )
 
     # ── Embed builders ─────────────────────────────────────────────────────────
@@ -618,8 +630,8 @@ class SigmojiCog(commands.Cog):
             medals = ["🥇", "🥈", "🥉"]
             lines  = []
             for i, (uid, pts) in enumerate(sorted_scores):
-                name   = ms.names.get(uid, f"Player {uid}")
-                medal  = medals[i] if i < len(medals) else f"{i + 1}."
+                name  = discord.utils.escape_markdown(ms.names.get(uid, f"Player {uid}"))
+                medal = medals[i] if i < len(medals) else f"{i + 1}."
                 lines.append(f"{medal} **{name}** — {pts} pts")
             embed.description = "\n".join(lines)
         else:

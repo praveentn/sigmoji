@@ -225,8 +225,9 @@ async def on_ready():
 
 @bot.event
 async def on_application_command_error(ctx: discord.ApplicationContext, error):
-    msg = f"An error occurred: {error}"
+    log.error("Command error in /%s: %s", getattr(ctx.command, "name", "?"), error, exc_info=True)
     try:
+        msg = "⚠️ Something went wrong. Please try again."
         if ctx.response.is_done():
             await ctx.followup.send(msg, ephemeral=True)
         else:

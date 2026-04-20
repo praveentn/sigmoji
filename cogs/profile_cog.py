@@ -35,6 +35,16 @@ def _ordinal(n: int) -> str:
     return f"{n}{['th','st','nd','rd','th'][min(n % 10, 4)]}"
 
 
+async def _require_guild(ctx: discord.ApplicationContext) -> bool:
+    if ctx.guild_id is None:
+        await ctx.respond(
+            "❌ Sigmoji commands can only be used inside a server, not in DMs.",
+            ephemeral=True,
+        )
+        return False
+    return True
+
+
 class ProfileCog(commands.Cog):
 
     # ── /profile ──────────────────────────────────────────────────────────────
@@ -50,9 +60,14 @@ class ProfileCog(commands.Cog):
             default=None,
         ),
     ) -> None:
+        if not await _require_guild(ctx):
+            return
+
         await ctx.defer()
-        target = user or ctx.author
-        player = await db.get_player(target.id)
+
+        guild_id = ctx.guild_id
+        target   = user or ctx.author
+        player   = await db.get_player(guild_id, target.id)
 
         if player is None:
             msg = (
@@ -63,26 +78,22 @@ class ProfileCog(commands.Cog):
             await ctx.followup.send(msg, ephemeral=True)
             return
 
-        # Level data
         xp        = player["xp"]
         lvl_idx, lvl_name, lvl_colour_emoji = get_level(xp)
         earned, needed, _ = xp_progress(xp)
         bar       = xp_bar(xp)
         next_lvl  = LEVELS[lvl_idx + 1][1] if lvl_idx < MAX_LEVEL else "MAX"
 
-        # Category best
-        cat_stats = await db.get_category_stats(target.id)
+        cat_stats = await db.get_category_stats(guild_id, target.id)
         top_cats  = sorted(cat_stats.items(), key=lambda x: x[1], reverse=True)[:3]
         top_cat_str = "\n".join(f"• {c}: **{w}** wins" for c, w in top_cats) or "—"
 
-        # Achievements earned
-        ach_ids   = await db.get_achievements(target.id)
+        ach_ids   = await db.get_achievements(guild_id, target.id)
         badge_row = " ".join(
             ACHIEVEMENTS[a]["emoji"] for a in ach_ids if a in ACHIEVEMENTS
         )[:1024] or "None yet"
 
-        # Rank
-        rank = await db.get_player_rank(target.id)
+        rank = await db.get_player_rank(guild_id, target.id)
 
         streak        = player["current_streak"]
         best_streak   = player["best_streak"]
@@ -95,7 +106,6 @@ class ProfileCog(commands.Cog):
         )
         embed.set_thumbnail(url=target.display_avatar.url)
 
-        # Level bar
         xp_desc = (
             f"`{bar}`\n"
             f"**{lvl_colour_emoji} Level {lvl_idx}  —  {lvl_name}**\n"
@@ -104,7 +114,6 @@ class ProfileCog(commands.Cog):
         )
         embed.add_field(name="⭐ Level", value=xp_desc, inline=False)
 
-        # Core stats
         embed.add_field(
             name="📊 Stats",
             value=(
@@ -115,7 +124,6 @@ class ProfileCog(commands.Cog):
             inline=True,
         )
 
-        # Streak
         embed.add_field(
             name="🔥 Streak",
             value=(
@@ -127,10 +135,8 @@ class ProfileCog(commands.Cog):
 
         embed.add_field(name="\u200b", value="\u200b", inline=False)
 
-        # Top categories
         embed.add_field(name="🎮 Top Categories", value=top_cat_str, inline=True)
 
-        # Badges
         embed.add_field(
             name=f"🏆 Badges  ({len(ach_ids)}/{len(ACHIEVEMENTS)})",
             value=badge_row,
@@ -144,7 +150,10 @@ class ProfileCog(commands.Cog):
 
     @discord.slash_command(name="streak", description="🔥 Check your daily streak status")
     async def streak(self, ctx: discord.ApplicationContext) -> None:
-        player = await db.get_player(ctx.author.id)
+        if not await _require_guild(ctx):
+            return
+
+        player = await db.get_player(ctx.guild_id, ctx.author.id)
 
         if player is None:
             await ctx.respond(
@@ -157,7 +166,6 @@ class ProfileCog(commands.Cog):
         best        = player["best_streak"]
         last_played = player.get("last_played") or "Never"
 
-        # Daily bonus preview
         bonus_pts = min(streak + 1, 10) * 5
         next_bonus = (
             f"+{bonus_pts} bonus points on your next win today!"
@@ -165,7 +173,6 @@ class ProfileCog(commands.Cog):
             else "Win today to start your streak!"
         )
 
-        # Streak milestones to unlock
         milestones = {3: "🔥 On Fire", 7: "🔥🔥 Committed", 30: "🌋 Inferno", 100: "♾️ Eternal Flame"}
         next_milestone = next(
             ((days, name) for days, name in sorted(milestones.items()) if days > streak),
@@ -188,11 +195,7 @@ class ProfileCog(commands.Cog):
         )
         embed.add_field(name="Last Played", value=last_played, inline=True)
 
-        embed.add_field(
-            name="💰 Daily Bonus",
-            value=next_bonus,
-            inline=False,
-        )
+        embed.add_field(name="💰 Daily Bonus", value=next_bonus, inline=False)
 
         if next_milestone:
             days_left, name = next_milestone
@@ -225,12 +228,16 @@ class ProfileCog(commands.Cog):
             default=None,
         ),
     ) -> None:
+        if not await _require_guild(ctx):
+            return
+
         await ctx.defer(ephemeral=True)
+
+        guild_id = ctx.guild_id
         target   = user or ctx.author
-        ach_ids  = await db.get_achievements(target.id)
+        ach_ids  = await db.get_achievements(guild_id, target.id)
         unlocked = set(ach_ids)
 
-        # Group by tier
         tiers = ["diamond", "gold", "silver", "bronze"]
         tier_labels = {
             "diamond": "💎 Diamond",
