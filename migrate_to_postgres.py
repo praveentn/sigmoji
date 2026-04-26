@@ -100,20 +100,32 @@ async def migrate():
         print("✅ Postgres tables created.")
 
         # ── Migrate players ───────────────────────────────────────────────────
+        from datetime import datetime
         async with sq.execute("SELECT * FROM players") as cur:
             rows = [dict(r) for r in await cur.fetchall()]
+        def parse_dt(val):
+            if not val:
+                return None
+            for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+                try:
+                    return datetime.strptime(val, fmt)
+                except Exception:
+                    continue
+            return None
         if rows:
             await pg.executemany(
                 """
                 INSERT INTO players (guild_id, user_id, username, xp, total_wins, total_games,
-                                     current_streak, best_streak, hint_free_wins, last_played)
-                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+                                     current_streak, best_streak, hint_free_wins, last_played, created_at)
+                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,COALESCE($11,NOW()))
                 ON CONFLICT (guild_id, user_id) DO NOTHING
                 """,
                 [
                     (r["guild_id"], r["user_id"], r["username"], r["xp"],
                      r["total_wins"], r["total_games"], r["current_streak"],
-                     r["best_streak"], r["hint_free_wins"], r["last_played"])
+                     r["best_streak"], r["hint_free_wins"],
+                     r.get("last_played"),
+                     parse_dt(r.get("created_at")))
                     for r in rows
                 ],
             )
@@ -139,11 +151,15 @@ async def migrate():
         if rows:
             await pg.executemany(
                 """
-                INSERT INTO achievements (guild_id, user_id, achievement_id)
-                VALUES ($1,$2,$3)
+                INSERT INTO achievements (guild_id, user_id, achievement_id, unlocked_at)
+                VALUES ($1,$2,$3,COALESCE($4,NOW()))
                 ON CONFLICT (guild_id, user_id, achievement_id) DO NOTHING
                 """,
-                [(r["guild_id"], r["user_id"], r["achievement_id"]) for r in rows],
+                [
+                    (r["guild_id"], r["user_id"], r["achievement_id"],
+                     parse_dt(r.get("unlocked_at")))
+                    for r in rows
+                ],
             )
         print(f"   achievements: {len(rows)} rows migrated.")
 
@@ -153,12 +169,13 @@ async def migrate():
         if rows:
             await pg.executemany(
                 """
-                INSERT INTO game_history (guild_id, user_id, category, answer, elapsed, points, hints_used, difficulty)
-                VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+                INSERT INTO game_history (guild_id, user_id, category, answer, elapsed, points, hints_used, difficulty, played_at)
+                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,COALESCE($9,NOW()))
                 """,
                 [
                     (r["guild_id"], r["user_id"], r["category"], r["answer"],
-                     r["elapsed"], r["points"], r["hints_used"], r["difficulty"])
+                     r["elapsed"], r["points"], r["hints_used"], r["difficulty"],
+                     parse_dt(r.get("played_at")))
                     for r in rows
                 ],
             )
