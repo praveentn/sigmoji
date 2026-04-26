@@ -150,10 +150,48 @@ def _streak_label(streak: int) -> str:
     return "💤 DORMANT"
 
 
-# ── Paginated embed builder ──────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
-_MAX_EMBED_DESC = 4000
-_MAX_MENTIONS_PER_PAGE = 40
+# Discord content field limit; leave buffer for safety
+_MAX_CONTENT = 1900
+
+def _mention_chunks(players: list[dict], per_line: bool = False) -> list[str]:
+    """
+    Split a player list into content-safe chunks of mention strings.
+
+    per_line=False → space-separated mentions (dormant section)
+    per_line=True  → one mention + streak info per line (at-risk section)
+    Each returned string fits within _MAX_CONTENT characters.
+    """
+    chunks: list[str] = []
+    current_parts: list[str] = []
+    current_len = 0
+
+    for p in players:
+        if per_line:
+            streak = p.get("current_streak", 0)
+            label = _streak_label(streak)
+            part = f"<@{p['user_id']}> — {label} · **{streak}** day{'s' if streak != 1 else ''}"
+            sep = "\n"
+        else:
+            part = f"<@{p['user_id']}>"
+            sep = "  "
+
+        add_len = len(part) + (len(sep) if current_parts else 0)
+        if current_parts and current_len + add_len > _MAX_CONTENT:
+            chunks.append(sep.join(current_parts))
+            current_parts = [part]
+            current_len = len(part)
+        else:
+            current_parts.append(part)
+            current_len += add_len
+
+    if current_parts:
+        sep = "\n" if per_line else "  "
+        chunks.append(sep.join(current_parts))
+
+    return chunks
+
 
 GREETING_HEADERS = [
     "Rise and shine, Sigmoji squad! 🌅",
@@ -176,43 +214,16 @@ CALL_TO_ACTION = [
 ]
 
 
-def _build_reminder_embeds(
-    guild: discord.Guild,
-    players: list[dict],
-    emoji_pick: tuple[str, str],
-    history_fact: str,
-    today: date,
-) -> list[discord.Embed]:
+def _build_main_embed(emoji_pick: tuple[str, str], history_fact: str, today: date) -> discord.Embed:
     emoji_char, emoji_desc = emoji_pick
     header = random.choice(GREETING_HEADERS)
-    cta = random.choice(CALL_TO_ACTION)
-
-    at_risk: list[dict] = []
-    active: list[dict] = []
-    dormant: list[dict] = []
-
-    yesterday = str(today - timedelta(days=1))
-    today_str = str(today)
-
-    for p in players:
-        lp = p.get("last_played")
-        if lp == today_str:
-            active.append(p)
-        elif lp == yesterday and p.get("current_streak", 0) > 0:
-            at_risk.append(p)
-        else:
-            dormant.append(p)
-
-    at_risk.sort(key=lambda p: p.get("current_streak", 0), reverse=True)
-
-    embeds: list[discord.Embed] = []
 
     day_suffix = {1: "st", 2: "nd", 3: "rd"}.get(today.day % 10, "th")
     if 11 <= today.day <= 13:
         day_suffix = "th"
     date_display = today.strftime(f"%B {today.day}{day_suffix}, %Y")
 
-    main_embed = discord.Embed(
+    embed = discord.Embed(
         title=f"{emoji_char}  {header}",
         description=(
             f"**📅  {date_display}**\n\n"
@@ -225,49 +236,13 @@ def _build_reminder_embeds(
         ),
         colour=0x7289DA,
     )
-    main_embed.set_footer(text="Sigmoji • Daily Reminder • One game a day keeps the boredom away!")
-    embeds.append(main_embed)
+    embed.set_footer(text="Sigmoji • Daily Reminder • One game a day keeps the boredom away!")
+    return embed
 
-    if at_risk:
-        chunks = [at_risk[i:i + _MAX_MENTIONS_PER_PAGE] for i in range(0, len(at_risk), _MAX_MENTIONS_PER_PAGE)]
-        for idx, chunk in enumerate(chunks):
-            lines: list[str] = []
-            for p in chunk:
-                streak = p.get("current_streak", 0)
-                label = _streak_label(streak)
-                lines.append(f"<@{p['user_id']}>  —  {label} streak of **{streak}** day{'s' if streak != 1 else ''}")
 
-            desc = (
-                "### 🚨 Streak at Risk!\n"
-                "Play today or lose your streak!\n\n"
-                + "\n".join(lines)
-            )
-            if len(desc) > _MAX_EMBED_DESC:
-                desc = desc[:_MAX_EMBED_DESC - 3] + "..."
-
-            embed = discord.Embed(description=desc, colour=0xF04747)
-            if len(chunks) > 1:
-                embed.set_footer(text=f"At-risk players • Page {idx + 1}/{len(chunks)}")
-            embeds.append(embed)
-
-    if dormant:
-        chunks = [dormant[i:i + _MAX_MENTIONS_PER_PAGE] for i in range(0, len(dormant), _MAX_MENTIONS_PER_PAGE)]
-        for idx, chunk in enumerate(chunks):
-            mentions = [f"<@{p['user_id']}>" for p in chunk]
-            desc = (
-                "### 👋 We Miss You!\n"
-                "It's been a while — jump back in!\n\n"
-                + "  ".join(mentions)
-            )
-            if len(desc) > _MAX_EMBED_DESC:
-                desc = desc[:_MAX_EMBED_DESC - 3] + "..."
-
-            embed = discord.Embed(description=desc, colour=0xFAA61A)
-            if len(chunks) > 1:
-                embed.set_footer(text=f"Returning players • Page {idx + 1}/{len(chunks)}")
-            embeds.append(embed)
-
-    cta_embed = discord.Embed(
+def _build_cta_embed() -> discord.Embed:
+    cta = random.choice(CALL_TO_ACTION)
+    return discord.Embed(
         description=(
             f"### 🎮  {cta}\n\n"
             f"Keep your streak alive, climb the leaderboard,\n"
@@ -275,9 +250,6 @@ def _build_reminder_embeds(
         ),
         colour=0x43B581,
     )
-    embeds.append(cta_embed)
-
-    return embeds
 
 
 # ── Cog ───────────────────────────────────────────────────────────────────────
@@ -508,14 +480,59 @@ class ReminderCog(commands.Cog):
             log.warning("No send permission in #%s (%s) — skipping.", channel.name, guild.name)
             return
 
-        embeds = _build_reminder_embeds(guild, players, emoji_pick, history_fact, today)
+        # Categorise players
+        yesterday = str(today - timedelta(days=1))
+        today_str = str(today)
+        at_risk: list[dict] = []
+        dormant: list[dict] = []
+        for p in players:
+            lp = p.get("last_played")
+            if lp == today_str:
+                pass  # already played today — don't ping them
+            elif lp == yesterday and p.get("current_streak", 0) > 0:
+                at_risk.append(p)
+            else:
+                dormant.append(p)
 
-        for i in range(0, len(embeds), 10):
-            await channel.send(embeds=embeds[i : i + 10])
+        at_risk.sort(key=lambda p: p.get("current_streak", 0), reverse=True)
 
+        # 1 — Main header embed (no mentions)
+        await channel.send(embeds=[_build_main_embed(emoji_pick, history_fact, today)])
+
+        # 2 — At-risk: one section header embed, then paginated content pings
+        if at_risk:
+            header = discord.Embed(
+                description=(
+                    "### 🚨 Streak at Risk!\n"
+                    "Play today or your streak resets to zero!"
+                ),
+                colour=0xF04747,
+            )
+            await channel.send(embeds=[header])
+            # Mentions go in content so Discord actually notifies users
+            for chunk in _mention_chunks(at_risk, per_line=True):
+                await channel.send(content=chunk)
+
+        # 3 — Dormant: section header embed, then paginated content pings
+        if dormant:
+            header = discord.Embed(
+                description=(
+                    "### 👋 We Miss You!\n"
+                    "It's been a while — jump back in!"
+                ),
+                colour=0xFAA61A,
+            )
+            await channel.send(embeds=[header])
+            for chunk in _mention_chunks(dormant, per_line=False):
+                await channel.send(content=chunk)
+
+        # 4 — CTA embed (no mentions)
+        await channel.send(embeds=[_build_cta_embed()])
+
+        total_pinged = len(at_risk) + len(dormant)
         log.info(
-            "Daily reminder sent to #%s in %s (%d players, %d embeds).",
-            channel.name, guild.name, len(players), len(embeds),
+            "Daily reminder sent to #%s in %s (%d pinged: %d at-risk, %d dormant).",
+            channel.name, guild.name, total_pinged, len(at_risk), len(dormant),
         )
 
 
