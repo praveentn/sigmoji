@@ -384,7 +384,11 @@ class ReminderCog(commands.Cog):
         emoji_pick = random.choice(EMOJI_INSIGHTS)
         history_fact = get_today_history(today)
 
-        await self._send_guild_reminder(ctx.guild, config["channel_id"], today, emoji_pick, history_fact)
+        # force=True so all registered players are pinged regardless of whether
+        # they already played today (makes the test actually demonstrable)
+        await self._send_guild_reminder(
+            ctx.guild, config["channel_id"], today, emoji_pick, history_fact, force=True
+        )
 
         channel = ctx.guild.get_channel(config["channel_id"])
         dest = channel.mention if channel else "the configured channel"
@@ -466,7 +470,16 @@ class ReminderCog(commands.Cog):
         today: date,
         emoji_pick: tuple[str, str],
         history_fact: str,
+        *,
+        force: bool = False,
     ) -> None:
+        """
+        Send the daily reminder to the configured channel.
+
+        force=True  → ping every registered player regardless of today's play
+                       status (used by /remind test so admins can verify pings)
+        force=False → only ping players who haven't played yet today (production)
+        """
         players = await db.get_all_guild_players(guild.id)
         if not players:
             log.debug("No players in %s — skipping reminder.", guild.name)
@@ -485,10 +498,11 @@ class ReminderCog(commands.Cog):
         today_str = str(today)
         at_risk: list[dict] = []
         dormant: list[dict] = []
+
         for p in players:
             lp = p.get("last_played")
-            if lp == today_str:
-                pass  # already played today — don't ping them
+            if lp == today_str and not force:
+                pass  # already played today — skip in scheduled reminders
             elif lp == yesterday and p.get("current_streak", 0) > 0:
                 at_risk.append(p)
             else:
@@ -499,40 +513,50 @@ class ReminderCog(commands.Cog):
         # 1 — Main header embed (no mentions)
         await channel.send(embeds=[_build_main_embed(emoji_pick, history_fact, today)])
 
-        # 2 — At-risk: one section header embed, then paginated content pings
+        # 2 — At-risk section: header embed + paginated content pings
         if at_risk:
-            header = discord.Embed(
+            await channel.send(embeds=[discord.Embed(
                 description=(
                     "### 🚨 Streak at Risk!\n"
                     "Play today or your streak resets to zero!"
                 ),
                 colour=0xF04747,
-            )
-            await channel.send(embeds=[header])
-            # Mentions go in content so Discord actually notifies users
+            )])
             for chunk in _mention_chunks(at_risk, per_line=True):
                 await channel.send(content=chunk)
 
-        # 3 — Dormant: section header embed, then paginated content pings
+        # 3 — Dormant / general section: header embed + paginated content pings
         if dormant:
-            header = discord.Embed(
+            await channel.send(embeds=[discord.Embed(
                 description=(
                     "### 👋 We Miss You!\n"
                     "It's been a while — jump back in!"
                 ),
                 colour=0xFAA61A,
-            )
-            await channel.send(embeds=[header])
+            )])
             for chunk in _mention_chunks(dormant, per_line=False):
                 await channel.send(content=chunk)
 
-        # 4 — CTA embed (no mentions)
+        # 4 — Fallback when nothing to ping (shouldn't happen in production
+        #     at 8 AM, but useful to surface during manual tests)
+        if not at_risk and not dormant:
+            await channel.send(embeds=[discord.Embed(
+                description=(
+                    "### ✅ Everyone's up to date!\n"
+                    "All registered players have already played today. "
+                    "Check back tomorrow!"
+                ),
+                colour=0x43B581,
+            )])
+
+        # 5 — CTA embed (no mentions)
         await channel.send(embeds=[_build_cta_embed()])
 
         total_pinged = len(at_risk) + len(dormant)
         log.info(
-            "Daily reminder sent to #%s in %s (%d pinged: %d at-risk, %d dormant).",
+            "Daily reminder sent to #%s in %s (%d pinged: %d at-risk, %d dormant%s).",
             channel.name, guild.name, total_pinged, len(at_risk), len(dormant),
+            ", force=True" if force else "",
         )
 
 
