@@ -1,14 +1,23 @@
 """
 ReminderCog — automated daily engagement reminders for Sigmoji.
 
-Sends ONE reminder per guild per day at 08:00 AM local server time to all
-players who have ever played the game.  Messages are paginated to stay
-within Discord's limits and designed to be impossible to ignore.
+Admins configure a target channel and timezone per server via /remind.
+The bot sends ONE reminder per guild per day at 08:00 AM in that guild's
+configured local time.  If a guild has not configured reminders, nothing
+is sent — there is no fallback to default channels.
+
+Setup commands (require Manage Server permission):
+  /remind channel #channel        — set target channel (enables reminders)
+  /remind timezone America/New_York — set IANA timezone
+  /remind status                  — show current config
+  /remind test                    — fire a test reminder immediately
+  /remind off                     — disable reminders
 """
 
 import logging
 import random
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import discord
 from discord.ext import commands, tasks
@@ -143,8 +152,8 @@ def _streak_label(streak: int) -> str:
 
 # ── Paginated embed builder ──────────────────────────────────────────────────
 
-_MAX_EMBED_DESC = 4000          # leave buffer below Discord's 4096 limit
-_MAX_MENTIONS_PER_PAGE = 40     # keeps mentions readable
+_MAX_EMBED_DESC = 4000
+_MAX_MENTIONS_PER_PAGE = 40
 
 GREETING_HEADERS = [
     "Rise and shine, Sigmoji squad! 🌅",
@@ -174,16 +183,13 @@ def _build_reminder_embeds(
     history_fact: str,
     today: date,
 ) -> list[discord.Embed]:
-    """Build a list of embeds for the daily reminder, paginated by player count."""
-
     emoji_char, emoji_desc = emoji_pick
     header = random.choice(GREETING_HEADERS)
     cta = random.choice(CALL_TO_ACTION)
 
-    # Partition players by streak status
-    at_risk: list[dict] = []     # played yesterday, streak > 0
-    active: list[dict] = []      # played today already (unlikely at 08:00)
-    dormant: list[dict] = []     # haven't played recently
+    at_risk: list[dict] = []
+    active: list[dict] = []
+    dormant: list[dict] = []
 
     yesterday = str(today - timedelta(days=1))
     today_str = str(today)
@@ -197,10 +203,8 @@ def _build_reminder_embeds(
         else:
             dormant.append(p)
 
-    # Sort at-risk by streak descending (highest streaks = most to lose)
     at_risk.sort(key=lambda p: p.get("current_streak", 0), reverse=True)
 
-    # ── First embed: header + emoji insight + history ─────────────────────────
     embeds: list[discord.Embed] = []
 
     day_suffix = {1: "st", 2: "nd", 3: "rd"}.get(today.day % 10, "th")
@@ -224,7 +228,6 @@ def _build_reminder_embeds(
     main_embed.set_footer(text="Sigmoji • Daily Reminder • One game a day keeps the boredom away!")
     embeds.append(main_embed)
 
-    # ── At-risk players embed(s) ──────────────────────────────────────────────
     if at_risk:
         chunks = [at_risk[i:i + _MAX_MENTIONS_PER_PAGE] for i in range(0, len(at_risk), _MAX_MENTIONS_PER_PAGE)]
         for idx, chunk in enumerate(chunks):
@@ -247,7 +250,6 @@ def _build_reminder_embeds(
                 embed.set_footer(text=f"At-risk players • Page {idx + 1}/{len(chunks)}")
             embeds.append(embed)
 
-    # ── Dormant players embed(s) ──────────────────────────────────────────────
     if dormant:
         chunks = [dormant[i:i + _MAX_MENTIONS_PER_PAGE] for i in range(0, len(dormant), _MAX_MENTIONS_PER_PAGE)]
         for idx, chunk in enumerate(chunks):
@@ -265,7 +267,6 @@ def _build_reminder_embeds(
                 embed.set_footer(text=f"Returning players • Page {idx + 1}/{len(chunks)}")
             embeds.append(embed)
 
-    # ── CTA embed ─────────────────────────────────────────────────────────────
     cta_embed = discord.Embed(
         description=(
             f"### 🎮  {cta}\n\n"
@@ -282,11 +283,11 @@ def _build_reminder_embeds(
 # ── Cog ───────────────────────────────────────────────────────────────────────
 
 class ReminderCog(commands.Cog):
-    """Sends one daily reminder per guild at 08:00 local server time."""
+    """Sends one daily reminder per guild at 08:00 AM in their configured timezone."""
 
     def __init__(self, bot: discord.Bot) -> None:
         self.bot = bot
-        self._last_reminder_date: str | None = None
+        self._last_sent: dict[int, str] = {}  # guild_id → date string
 
     def cog_unload(self) -> None:
         self._daily_tick.cancel()
@@ -297,43 +298,199 @@ class ReminderCog(commands.Cog):
             self._daily_tick.start()
             log.info("Daily reminder task started.")
 
+    # ── /remind command group ─────────────────────────────────────────────────
+
+    remind = discord.SlashCommandGroup(
+        "remind",
+        "Configure automated daily reminders for this server",
+        guild_only=True,
+        default_member_permissions=discord.Permissions(manage_guild=True),
+    )
+
+    @remind.command(name="channel", description="Set the channel where daily reminders are sent")
+    async def remind_channel(
+        self,
+        ctx: discord.ApplicationContext,
+        channel: discord.Option(discord.TextChannel, "Channel to receive daily reminders"),
+    ) -> None:
+        if not channel.permissions_for(ctx.guild.me).send_messages:
+            await ctx.respond(
+                f"❌ I don't have permission to send messages in {channel.mention}.",
+                ephemeral=True,
+            )
+            return
+
+        config = await db.get_reminder_config(ctx.guild_id)
+        tz = config["timezone"] if config else "UTC"
+        await db.save_reminder_config(ctx.guild_id, channel.id, tz, True)
+
+        await ctx.respond(
+            f"✅ Daily reminders will be sent to {channel.mention} at **08:00 AM** (`{tz}`).\n"
+            f"Use `/remind timezone` to change the timezone, or `/remind test` to preview.",
+            ephemeral=True,
+        )
+
+    @remind.command(name="timezone", description="Set the timezone for the 08:00 AM reminder (IANA name)")
+    async def remind_timezone(
+        self,
+        ctx: discord.ApplicationContext,
+        timezone: discord.Option(str, "IANA timezone, e.g. America/New_York, Europe/London, Asia/Kolkata"),
+    ) -> None:
+        try:
+            tz = ZoneInfo(timezone)
+        except (ZoneInfoNotFoundError, KeyError):
+            await ctx.respond(
+                f"❌ `{timezone}` is not a recognised IANA timezone.\n"
+                f"Examples: `America/New_York` · `Europe/London` · `Asia/Kolkata` · `Asia/Tokyo`",
+                ephemeral=True,
+            )
+            return
+
+        config = await db.get_reminder_config(ctx.guild_id)
+        if config is None:
+            await ctx.respond(
+                "❌ No reminder channel set yet. Run `/remind channel` first.",
+                ephemeral=True,
+            )
+            return
+
+        now_local = datetime.now(tz)
+        time_str = now_local.strftime("%I:%M %p %Z")
+
+        await db.save_reminder_config(ctx.guild_id, config["channel_id"], timezone, config["enabled"])
+
+        await ctx.respond(
+            f"✅ Timezone set to `{timezone}`.\n"
+            f"Current local time: **{time_str}**\n"
+            f"Reminders will fire at **08:00 AM** in this timezone.",
+            ephemeral=True,
+        )
+
+    @remind.command(name="status", description="Show the current reminder configuration")
+    async def remind_status(self, ctx: discord.ApplicationContext) -> None:
+        config = await db.get_reminder_config(ctx.guild_id)
+        if config is None:
+            await ctx.respond(
+                "ℹ️ Reminders are **not configured** for this server.\n"
+                "Use `/remind channel #channel` to get started.",
+                ephemeral=True,
+            )
+            return
+
+        channel = ctx.guild.get_channel(config["channel_id"])
+        channel_str = channel.mention if channel else f"⚠️ deleted channel (ID {config['channel_id']})"
+        status_str = "✅ Enabled" if config["enabled"] else "❌ Disabled"
+
+        try:
+            tz = ZoneInfo(config["timezone"])
+            now_local = datetime.now(tz)
+            time_str = now_local.strftime("%I:%M %p %Z")
+        except Exception:
+            time_str = "unknown"
+
+        embed = discord.Embed(title="📋 Reminder Configuration", colour=0x7289DA)
+        embed.add_field(name="Status", value=status_str, inline=True)
+        embed.add_field(name="Channel", value=channel_str, inline=True)
+        embed.add_field(name="Timezone", value=f"`{config['timezone']}`", inline=True)
+        embed.add_field(name="Current Local Time", value=time_str, inline=True)
+        embed.add_field(name="Fires Daily At", value="08:00 AM", inline=True)
+        await ctx.respond(embed=embed, ephemeral=True)
+
+    @remind.command(name="test", description="Send a test reminder right now to the configured channel")
+    async def remind_test(self, ctx: discord.ApplicationContext) -> None:
+        config = await db.get_reminder_config(ctx.guild_id)
+        if config is None:
+            await ctx.respond(
+                "❌ No reminder channel configured. Use `/remind channel` first.",
+                ephemeral=True,
+            )
+            return
+
+        await ctx.defer(ephemeral=True)
+
+        today = date.today()
+        emoji_pick = random.choice(EMOJI_INSIGHTS)
+        history_fact = get_today_history(today)
+
+        await self._send_guild_reminder(ctx.guild, config["channel_id"], today, emoji_pick, history_fact)
+
+        channel = ctx.guild.get_channel(config["channel_id"])
+        dest = channel.mention if channel else "the configured channel"
+        await ctx.followup.send(f"✅ Test reminder sent to {dest}.", ephemeral=True)
+
+    @remind.command(name="off", description="Disable daily reminders for this server")
+    async def remind_off(self, ctx: discord.ApplicationContext) -> None:
+        config = await db.get_reminder_config(ctx.guild_id)
+        if config is None:
+            await ctx.respond("ℹ️ Reminders were never configured for this server.", ephemeral=True)
+            return
+
+        await db.save_reminder_config(ctx.guild_id, config["channel_id"], config["timezone"], False)
+        await ctx.respond(
+            "🔕 Daily reminders have been **disabled**.\n"
+            "Use `/remind channel` to re-enable them.",
+            ephemeral=True,
+        )
+
     # ── Task loop ─────────────────────────────────────────────────────────────
 
     @tasks.loop(seconds=30)
     async def _daily_tick(self) -> None:
-        now = datetime.now()
-        today_str = str(now.date())
-
-        # Already sent today?
-        if self._last_reminder_date == today_str:
+        try:
+            configs = await db.get_all_active_reminder_configs()
+        except Exception as exc:
+            log.error("Failed to load reminder configs: %s", exc)
             return
 
-        # Only fire at 08:00 local time (between 08:00:00 and 08:00:59)
-        if now.hour != 8 or now.minute > 0:
-            return
+        # Amortise emoji/history lookups when multiple guilds share the same date
+        date_cache: dict[str, tuple] = {}
 
-        log.info("08:00 AM reached — sending daily reminders.")
-        self._last_reminder_date = today_str
-
-        today = now.date()
-        emoji_pick = random.choice(EMOJI_INSIGHTS)
-        history_fact = get_today_history(today)
-
-        for guild in self.bot.guilds:
+        for config in configs:
+            guild_id = config["guild_id"]
             try:
-                await self._send_guild_reminder(guild, today, emoji_pick, history_fact)
+                tz = ZoneInfo(config["timezone"])
+            except (ZoneInfoNotFoundError, KeyError):
+                log.warning("Invalid timezone %r for guild %d — skipping.", config["timezone"], guild_id)
+                continue
+
+            now_local = datetime.now(tz)
+            if now_local.hour != 8 or now_local.minute > 0:
+                continue
+
+            today_str = str(now_local.date())
+            if self._last_sent.get(guild_id) == today_str:
+                continue
+
+            if today_str not in date_cache:
+                date_cache[today_str] = (random.choice(EMOJI_INSIGHTS), get_today_history(now_local.date()))
+
+            emoji_pick, history_fact = date_cache[today_str]
+            self._last_sent[guild_id] = today_str
+
+            guild = self.bot.get_guild(guild_id)
+            if guild is None:
+                log.debug("Guild %d not in bot cache — skipping.", guild_id)
+                continue
+
+            try:
+                await self._send_guild_reminder(
+                    guild, config["channel_id"], now_local.date(), emoji_pick, history_fact
+                )
             except Exception as exc:
-                log.error("Reminder failed for guild %s (%d): %s", guild.name, guild.id, exc, exc_info=True)
+                log.error(
+                    "Reminder failed for guild %s (%d): %s", guild.name, guild_id, exc, exc_info=True
+                )
 
     @_daily_tick.before_loop
     async def _before_tick(self) -> None:
         await self.bot.wait_until_ready()
 
-    # ── Per-guild logic ───────────────────────────────────────────────────────
+    # ── Per-guild send ────────────────────────────────────────────────────────
 
     async def _send_guild_reminder(
         self,
         guild: discord.Guild,
+        channel_id: int,
         today: date,
         emoji_pick: tuple[str, str],
         history_fact: str,
@@ -343,25 +500,18 @@ class ReminderCog(commands.Cog):
             log.debug("No players in %s — skipping reminder.", guild.name)
             return
 
-        embeds = _build_reminder_embeds(guild, players, emoji_pick, history_fact, today)
-
-        # Find a suitable channel: system channel → first writable text channel
-        channel = guild.system_channel
-        if channel is None or not channel.permissions_for(guild.me).send_messages:
-            for ch in guild.text_channels:
-                if ch.permissions_for(guild.me).send_messages:
-                    channel = ch
-                    break
-
+        channel = guild.get_channel(channel_id)
         if channel is None:
-            log.warning("No writable channel in %s — skipping.", guild.name)
+            log.warning("Configured channel %d not found in %s — skipping.", channel_id, guild.name)
+            return
+        if not channel.permissions_for(guild.me).send_messages:
+            log.warning("No send permission in #%s (%s) — skipping.", channel.name, guild.name)
             return
 
-        # Discord allows max 10 embeds per message; split if needed
-        batch_size = 10
-        for i in range(0, len(embeds), batch_size):
-            batch = embeds[i : i + batch_size]
-            await channel.send(embeds=batch)
+        embeds = _build_reminder_embeds(guild, players, emoji_pick, history_fact, today)
+
+        for i in range(0, len(embeds), 10):
+            await channel.send(embeds=embeds[i : i + 10])
 
         log.info(
             "Daily reminder sent to #%s in %s (%d players, %d embeds).",

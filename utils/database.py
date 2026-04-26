@@ -92,6 +92,15 @@ _CREATE_TABLES_DDL = [
     "CREATE INDEX IF NOT EXISTS idx_cat_stats_guild    ON category_stats(guild_id)",
     "CREATE INDEX IF NOT EXISTS idx_achievements_guild ON achievements(guild_id)",
     "CREATE INDEX IF NOT EXISTS idx_game_history_guild ON game_history(guild_id)",
+    """
+    CREATE TABLE IF NOT EXISTS guild_reminder_config (
+        guild_id   BIGINT  PRIMARY KEY,
+        channel_id BIGINT  NOT NULL,
+        timezone   TEXT    NOT NULL DEFAULT 'UTC',
+        enabled    BOOLEAN NOT NULL DEFAULT TRUE,
+        updated_at TIMESTAMP DEFAULT NOW()
+    )
+    """,
 ]
 
 
@@ -376,3 +385,44 @@ async def get_all_guild_players(guild_id: int) -> list[dict]:
             guild_id,
         )
         return [dict(r) for r in rows]
+
+
+# ── Reminder config ───────────────────────────────────────────────────────────
+
+async def get_reminder_config(guild_id: int) -> dict | None:
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            "SELECT * FROM guild_reminder_config WHERE guild_id = $1",
+            guild_id,
+        )
+        return dict(row) if row else None
+
+
+async def get_all_active_reminder_configs() -> list[dict]:
+    """Return configs for all guilds that have reminders enabled."""
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            "SELECT * FROM guild_reminder_config WHERE enabled = TRUE"
+        )
+        return [dict(r) for r in rows]
+
+
+async def save_reminder_config(
+    guild_id: int, channel_id: int, timezone: str, enabled: bool
+) -> None:
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO guild_reminder_config (guild_id, channel_id, timezone, enabled, updated_at)
+            VALUES ($1, $2, $3, $4, NOW())
+            ON CONFLICT (guild_id) DO UPDATE SET
+                channel_id = EXCLUDED.channel_id,
+                timezone   = EXCLUDED.timezone,
+                enabled    = EXCLUDED.enabled,
+                updated_at = NOW()
+            """,
+            guild_id, channel_id, timezone, enabled,
+        )
