@@ -49,6 +49,7 @@ COGS = [
     "cogs.sigmoji_cog",
     "cogs.profile_cog",
     "cogs.leaderboard_cog",
+    "cogs.reminder_cog",
 ]
 
 # ── Status dashboard ──────────────────────────────────────────────────────────
@@ -276,4 +277,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         log.info("Shutting down — goodbye!")
     finally:
+        from utils.database import close_db
+        loop.run_until_complete(close_db())
         loop.close()

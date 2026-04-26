@@ -1,8 +1,8 @@
 """
-SQLite persistence layer for Sigmoji (via aiosqlite).
+PostgreSQL persistence layer for Sigmoji (via asyncpg).
 
 All public coroutines accept/return plain Python dicts or primitives so that
-callers never need to import aiosqlite themselves.
+callers never need to import asyncpg themselves.
 
 Every function takes guild_id as its first parameter — all data is strictly
 scoped to the Discord server it originates from.
@@ -10,19 +10,39 @@ scoped to the Discord server it originates from.
 
 import logging
 import os
-import aiosqlite
+import asyncpg
 from datetime import date, timedelta
 
-DB_PATH = os.getenv("DATABASE_PATH", "sigmoji.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 log = logging.getLogger("sigmoji.db")
 
+# ── Connection pool ───────────────────────────────────────────────────────────
+
+_pool: asyncpg.Pool | None = None
+
+
+async def _get_pool() -> asyncpg.Pool:
+    global _pool
+    if _pool is None:
+        _pool = await asyncpg.create_pool(DATABASE_URL, min_size=2, max_size=10)
+    return _pool
+
+
+async def close_db() -> None:
+    global _pool
+    if _pool is not None:
+        await _pool.close()
+        _pool = None
+
+
 # ── DDL ───────────────────────────────────────────────────────────────────────
 
-_CREATE_TABLES_DDL = """
+_CREATE_TABLES_DDL = [
+    """
     CREATE TABLE IF NOT EXISTS players (
-        guild_id        INTEGER NOT NULL,
-        user_id         INTEGER NOT NULL,
+        guild_id        BIGINT  NOT NULL,
+        user_id         BIGINT  NOT NULL,
         username        TEXT    NOT NULL,
         xp              INTEGER DEFAULT 0,
         total_wins      INTEGER DEFAULT 0,
@@ -31,174 +51,89 @@ _CREATE_TABLES_DDL = """
         best_streak     INTEGER DEFAULT 0,
         hint_free_wins  INTEGER DEFAULT 0,
         last_played     TEXT,
-        created_at      TEXT    DEFAULT (datetime('now')),
+        created_at      TIMESTAMP DEFAULT NOW(),
         PRIMARY KEY (guild_id, user_id)
-    );
-
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS category_stats (
-        guild_id INTEGER NOT NULL,
-        user_id  INTEGER NOT NULL,
+        guild_id BIGINT  NOT NULL,
+        user_id  BIGINT  NOT NULL,
         category TEXT    NOT NULL,
         wins     INTEGER DEFAULT 0,
         PRIMARY KEY (guild_id, user_id, category)
-    );
-
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS achievements (
-        id             INTEGER PRIMARY KEY AUTOINCREMENT,
-        guild_id       INTEGER NOT NULL,
-        user_id        INTEGER NOT NULL,
-        achievement_id TEXT    NOT NULL,
-        unlocked_at    TEXT    DEFAULT (datetime('now')),
+        id             SERIAL PRIMARY KEY,
+        guild_id       BIGINT NOT NULL,
+        user_id        BIGINT NOT NULL,
+        achievement_id TEXT   NOT NULL,
+        unlocked_at    TIMESTAMP DEFAULT NOW(),
         UNIQUE(guild_id, user_id, achievement_id)
-    );
-
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS game_history (
-        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        guild_id   INTEGER NOT NULL,
-        user_id    INTEGER NOT NULL,
+        id         SERIAL  PRIMARY KEY,
+        guild_id   BIGINT  NOT NULL,
+        user_id    BIGINT  NOT NULL,
         category   TEXT    NOT NULL,
         answer     TEXT    NOT NULL,
-        elapsed    REAL    NOT NULL,
+        elapsed    DOUBLE PRECISION NOT NULL,
         points     INTEGER NOT NULL,
         hints_used INTEGER DEFAULT 0,
         difficulty TEXT    NOT NULL,
-        played_at  TEXT    DEFAULT (datetime('now'))
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_players_guild     ON players(guild_id);
-    CREATE INDEX IF NOT EXISTS idx_cat_stats_guild   ON category_stats(guild_id);
-    CREATE INDEX IF NOT EXISTS idx_achievements_guild ON achievements(guild_id);
-    CREATE INDEX IF NOT EXISTS idx_game_history_guild ON game_history(guild_id);
-"""
-
-# Migration: old schema had no guild_id column. Existing data is preserved
-# under guild_id=0 (a sentinel; no real Discord guild has ID 0).
-_MIGRATION_DDL = """
-    ALTER TABLE players       RENAME TO _bak_players;
-    ALTER TABLE category_stats RENAME TO _bak_category_stats;
-    ALTER TABLE achievements   RENAME TO _bak_achievements;
-    ALTER TABLE game_history   RENAME TO _bak_game_history;
-
-    CREATE TABLE players (
-        guild_id        INTEGER NOT NULL,
-        user_id         INTEGER NOT NULL,
-        username        TEXT    NOT NULL,
-        xp              INTEGER DEFAULT 0,
-        total_wins      INTEGER DEFAULT 0,
-        total_games     INTEGER DEFAULT 0,
-        current_streak  INTEGER DEFAULT 0,
-        best_streak     INTEGER DEFAULT 0,
-        hint_free_wins  INTEGER DEFAULT 0,
-        last_played     TEXT,
-        created_at      TEXT    DEFAULT (datetime('now')),
-        PRIMARY KEY (guild_id, user_id)
-    );
-
-    CREATE TABLE category_stats (
-        guild_id INTEGER NOT NULL,
-        user_id  INTEGER NOT NULL,
-        category TEXT    NOT NULL,
-        wins     INTEGER DEFAULT 0,
-        PRIMARY KEY (guild_id, user_id, category)
-    );
-
-    CREATE TABLE achievements (
-        id             INTEGER PRIMARY KEY AUTOINCREMENT,
-        guild_id       INTEGER NOT NULL,
-        user_id        INTEGER NOT NULL,
-        achievement_id TEXT    NOT NULL,
-        unlocked_at    TEXT    DEFAULT (datetime('now')),
-        UNIQUE(guild_id, user_id, achievement_id)
-    );
-
-    CREATE TABLE game_history (
-        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        guild_id   INTEGER NOT NULL,
-        user_id    INTEGER NOT NULL,
-        category   TEXT    NOT NULL,
-        answer     TEXT    NOT NULL,
-        elapsed    REAL    NOT NULL,
-        points     INTEGER NOT NULL,
-        hints_used INTEGER DEFAULT 0,
-        difficulty TEXT    NOT NULL,
-        played_at  TEXT    DEFAULT (datetime('now'))
-    );
-
-    INSERT INTO players
-        (guild_id, user_id, username, xp, total_wins, total_games,
-         current_streak, best_streak, hint_free_wins, last_played, created_at)
-        SELECT 0, user_id, username, xp, total_wins, total_games,
-               current_streak, best_streak, hint_free_wins, last_played, created_at
-        FROM _bak_players;
-
-    INSERT INTO category_stats (guild_id, user_id, category, wins)
-        SELECT 0, user_id, category, wins
-        FROM _bak_category_stats;
-
-    INSERT INTO achievements (guild_id, user_id, achievement_id, unlocked_at)
-        SELECT 0, user_id, achievement_id, unlocked_at
-        FROM _bak_achievements;
-
-    INSERT INTO game_history
-        (guild_id, user_id, category, answer, elapsed, points, hints_used, difficulty, played_at)
-        SELECT 0, user_id, category, answer, elapsed, points, hints_used, difficulty, played_at
-        FROM _bak_game_history;
-
-    DROP TABLE _bak_players;
-    DROP TABLE _bak_category_stats;
-    DROP TABLE _bak_achievements;
-    DROP TABLE _bak_game_history;
-"""
+        played_at  TIMESTAMP DEFAULT NOW()
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_players_guild      ON players(guild_id)",
+    "CREATE INDEX IF NOT EXISTS idx_cat_stats_guild    ON category_stats(guild_id)",
+    "CREATE INDEX IF NOT EXISTS idx_achievements_guild ON achievements(guild_id)",
+    "CREATE INDEX IF NOT EXISTS idx_game_history_guild ON game_history(guild_id)",
+]
 
 
-# ── Schema init / migration ───────────────────────────────────────────────────
+# ── Schema init ───────────────────────────────────────────────────────────────
 
 async def init_db() -> None:
-    async with aiosqlite.connect(DB_PATH) as db:
-        # Detect whether an old (guild-unaware) schema exists and migrate it.
-        async with db.execute("PRAGMA table_info(players)") as cur:
-            player_cols = {row[1] for row in await cur.fetchall()}
-
-        if player_cols and "guild_id" not in player_cols:
-            log.info("Migrating schema to guild-scoped tables…")
-            await db.executescript(_MIGRATION_DDL)
-            log.info("Schema migration complete — pre-existing data lives under guild_id=0.")
-
-        await db.executescript(_CREATE_TABLES_DDL)
-        await db.commit()
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        for stmt in _CREATE_TABLES_DDL:
+            await conn.execute(stmt)
+    log.info("PostgreSQL schema initialised.")
 
 
 # ── Player helpers ────────────────────────────────────────────────────────────
 
 async def get_player(guild_id: int, user_id: int) -> dict | None:
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(
-            "SELECT * FROM players WHERE guild_id = ? AND user_id = ?",
-            (guild_id, user_id),
-        ) as cur:
-            row = await cur.fetchone()
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            "SELECT * FROM players WHERE guild_id = $1 AND user_id = $2",
+            guild_id, user_id,
+        )
         return dict(row) if row else None
 
 
 async def ensure_player(guild_id: int, user_id: int, username: str) -> dict:
     """Fetch player, creating a fresh row if they don't exist yet."""
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
-        await db.execute(
-            "INSERT OR IGNORE INTO players (guild_id, user_id, username) VALUES (?, ?, ?)",
-            (guild_id, user_id, username),
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO players (guild_id, user_id, username)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (guild_id, user_id) DO UPDATE SET username = $3
+            """,
+            guild_id, user_id, username,
         )
-        await db.execute(
-            "UPDATE players SET username = ? WHERE guild_id = ? AND user_id = ?",
-            (username, guild_id, user_id),
+        row = await conn.fetchrow(
+            "SELECT * FROM players WHERE guild_id = $1 AND user_id = $2",
+            guild_id, user_id,
         )
-        await db.commit()
-        async with db.execute(
-            "SELECT * FROM players WHERE guild_id = ? AND user_id = ?",
-            (guild_id, user_id),
-        ) as cur:
-            return dict(await cur.fetchone())
+        return dict(row)
 
 
 # ── Win recording ─────────────────────────────────────────────────────────────
@@ -222,111 +157,115 @@ async def record_win(
     today     = str(date.today())
     yesterday = str(date.today() - timedelta(days=1))
 
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            await conn.execute(
+                """
+                INSERT INTO players (guild_id, user_id, username)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (guild_id, user_id) DO UPDATE SET username = $3
+                """,
+                guild_id, user_id, username,
+            )
 
-        await db.execute(
-            "INSERT OR IGNORE INTO players (guild_id, user_id, username) VALUES (?, ?, ?)",
-            (guild_id, user_id, username),
-        )
-        await db.execute(
-            "UPDATE players SET username = ? WHERE guild_id = ? AND user_id = ?",
-            (username, guild_id, user_id),
-        )
+            player = dict(await conn.fetchrow(
+                "SELECT * FROM players WHERE guild_id = $1 AND user_id = $2",
+                guild_id, user_id,
+            ))
 
-        async with db.execute(
-            "SELECT * FROM players WHERE guild_id = ? AND user_id = ?",
-            (guild_id, user_id),
-        ) as cur:
-            player = dict(await cur.fetchone())
+            # ── Streak logic ──────────────────────────────────────────────────
+            last_played = player.get("last_played")
+            daily_bonus = 0
 
-        # ── Streak logic ──────────────────────────────────────────────────────
-        last_played = player.get("last_played")
-        daily_bonus = 0
+            if last_played == today:
+                new_streak = player["current_streak"]
+            elif last_played == yesterday:
+                new_streak  = player["current_streak"] + 1
+                daily_bonus = min(new_streak, 10) * 5
+            else:
+                new_streak  = 1
+                daily_bonus = 5
 
-        if last_played == today:
-            new_streak = player["current_streak"]
-        elif last_played == yesterday:
-            new_streak  = player["current_streak"] + 1
-            daily_bonus = min(new_streak, 10) * 5
-        else:
-            new_streak  = 1
-            daily_bonus = 5
+            total_xp      = points + daily_bonus
+            new_best      = max(new_streak, player["best_streak"])
+            new_hint_free = (
+                player["hint_free_wins"] + 1 if hints_used == 0
+                else player["hint_free_wins"]
+            )
 
-        total_xp      = points + daily_bonus
-        new_best      = max(new_streak, player["best_streak"])
-        new_hint_free = (
-            player["hint_free_wins"] + 1 if hints_used == 0
-            else player["hint_free_wins"]
-        )
+            await conn.execute(
+                """
+                UPDATE players SET
+                    xp             = xp + $1,
+                    total_wins     = total_wins + 1,
+                    total_games    = total_games + 1,
+                    current_streak = $2,
+                    best_streak    = $3,
+                    hint_free_wins = $4,
+                    last_played    = $5
+                WHERE guild_id = $6 AND user_id = $7
+                """,
+                total_xp, new_streak, new_best, new_hint_free, today,
+                guild_id, user_id,
+            )
 
-        await db.execute(
-            """
-            UPDATE players SET
-                xp             = xp + ?,
-                total_wins     = total_wins + 1,
-                total_games    = total_games + 1,
-                current_streak = ?,
-                best_streak    = ?,
-                hint_free_wins = ?,
-                last_played    = ?
-            WHERE guild_id = ? AND user_id = ?
-            """,
-            (total_xp, new_streak, new_best, new_hint_free, today, guild_id, user_id),
-        )
+            await conn.execute(
+                """
+                INSERT INTO category_stats (guild_id, user_id, category, wins)
+                VALUES ($1, $2, $3, 1)
+                ON CONFLICT (guild_id, user_id, category)
+                DO UPDATE SET wins = category_stats.wins + 1
+                """,
+                guild_id, user_id, category,
+            )
 
-        await db.execute(
-            """
-            INSERT INTO category_stats (guild_id, user_id, category, wins) VALUES (?, ?, ?, 1)
-            ON CONFLICT(guild_id, user_id, category) DO UPDATE SET wins = wins + 1
-            """,
-            (guild_id, user_id, category),
-        )
+            await conn.execute(
+                """
+                INSERT INTO game_history
+                    (guild_id, user_id, category, answer, elapsed, points, hints_used, difficulty)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                """,
+                guild_id, user_id, category, answer,
+                round(elapsed, 2), total_xp, hints_used, difficulty,
+            )
 
-        await db.execute(
-            """
-            INSERT INTO game_history
-                (guild_id, user_id, category, answer, elapsed, points, hints_used, difficulty)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (guild_id, user_id, category, answer, round(elapsed, 2), total_xp, hints_used, difficulty),
-        )
-
-        await db.commit()
-
-        async with db.execute(
-            "SELECT * FROM players WHERE guild_id = ? AND user_id = ?",
-            (guild_id, user_id),
-        ) as cur:
-            updated = dict(await cur.fetchone())
+            updated = dict(await conn.fetchrow(
+                "SELECT * FROM players WHERE guild_id = $1 AND user_id = $2",
+                guild_id, user_id,
+            ))
 
         return updated, daily_bonus
 
 
 async def record_timeout(guild_id: int, user_id: int, username: str) -> None:
     """Increment total_games for a player who didn't answer (timeout)."""
-    async with aiosqlite.connect(DB_PATH) as db:
-        await db.execute(
-            "INSERT OR IGNORE INTO players (guild_id, user_id, username) VALUES (?, ?, ?)",
-            (guild_id, user_id, username),
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO players (guild_id, user_id, username)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (guild_id, user_id) DO NOTHING
+            """,
+            guild_id, user_id, username,
         )
-        await db.execute(
-            "UPDATE players SET total_games = total_games + 1 WHERE guild_id = ? AND user_id = ?",
-            (guild_id, user_id),
+        await conn.execute(
+            "UPDATE players SET total_games = total_games + 1 WHERE guild_id = $1 AND user_id = $2",
+            guild_id, user_id,
         )
-        await db.commit()
 
 
 # ── Achievements ──────────────────────────────────────────────────────────────
 
 async def get_achievements(guild_id: int, user_id: int) -> list[str]:
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute(
-            "SELECT achievement_id FROM achievements WHERE guild_id = ? AND user_id = ? ORDER BY unlocked_at",
-            (guild_id, user_id),
-        ) as cur:
-            rows = await cur.fetchall()
-        return [r[0] for r in rows]
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            "SELECT achievement_id FROM achievements WHERE guild_id = $1 AND user_id = $2 ORDER BY unlocked_at",
+            guild_id, user_id,
+        )
+        return [r["achievement_id"] for r in rows]
 
 
 async def unlock_achievement(guild_id: int, user_id: int, achievement_id: str) -> bool:
@@ -336,95 +275,104 @@ async def unlock_achievement(guild_id: int, user_id: int, achievement_id: str) -
     """
     from utils.achievements import ACHIEVEMENTS
 
-    async with aiosqlite.connect(DB_PATH) as db:
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
         try:
-            await db.execute(
-                "INSERT INTO achievements (guild_id, user_id, achievement_id) VALUES (?, ?, ?)",
-                (guild_id, user_id, achievement_id),
-            )
-            xp_reward = ACHIEVEMENTS.get(achievement_id, {}).get("xp", 0)
-            if xp_reward:
-                await db.execute(
-                    "UPDATE players SET xp = xp + ? WHERE guild_id = ? AND user_id = ?",
-                    (xp_reward, guild_id, user_id),
+            async with conn.transaction():
+                await conn.execute(
+                    "INSERT INTO achievements (guild_id, user_id, achievement_id) VALUES ($1, $2, $3)",
+                    guild_id, user_id, achievement_id,
                 )
-            await db.commit()
+                xp_reward = ACHIEVEMENTS.get(achievement_id, {}).get("xp", 0)
+                if xp_reward:
+                    await conn.execute(
+                        "UPDATE players SET xp = xp + $1 WHERE guild_id = $2 AND user_id = $3",
+                        xp_reward, guild_id, user_id,
+                    )
             return True
-        except aiosqlite.IntegrityError:
+        except asyncpg.UniqueViolationError:
             return False
 
 
 # ── Leaderboard ───────────────────────────────────────────────────────────────
 
 async def get_leaderboard(guild_id: int, category: str | None = None, limit: int = 10) -> list[dict]:
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
         if category:
-            async with db.execute(
+            rows = await conn.fetch(
                 """
                 SELECT p.user_id, p.username, cs.wins AS total_wins, p.xp
                 FROM   category_stats cs
                 JOIN   players p ON p.guild_id = cs.guild_id AND p.user_id = cs.user_id
-                WHERE  cs.guild_id = ? AND cs.category = ?
+                WHERE  cs.guild_id = $1 AND cs.category = $2
                 ORDER  BY cs.wins DESC, p.xp DESC
-                LIMIT  ?
+                LIMIT  $3
                 """,
-                (guild_id, category, limit),
-            ) as cur:
-                rows = await cur.fetchall()
+                guild_id, category, limit,
+            )
         else:
-            async with db.execute(
+            rows = await conn.fetch(
                 """
                 SELECT user_id, username, total_wins, xp
                 FROM   players
-                WHERE  guild_id = ?
+                WHERE  guild_id = $1
                 ORDER  BY total_wins DESC, xp DESC
-                LIMIT  ?
+                LIMIT  $2
                 """,
-                (guild_id, limit),
-            ) as cur:
-                rows = await cur.fetchall()
+                guild_id, limit,
+            )
         return [dict(r) for r in rows]
 
 
 async def get_player_rank(guild_id: int, user_id: int, category: str | None = None) -> int:
-    async with aiosqlite.connect(DB_PATH) as db:
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
         if category:
-            async with db.execute(
+            row = await conn.fetchrow(
                 """
-                SELECT COUNT(*) + 1 FROM category_stats
-                WHERE  guild_id = ?
+                SELECT COUNT(*) + 1 AS rank FROM category_stats
+                WHERE  guild_id = $1
                 AND    wins > COALESCE(
                     (SELECT wins FROM category_stats
-                     WHERE guild_id = ? AND user_id = ? AND category = ?),
+                     WHERE guild_id = $1 AND user_id = $2 AND category = $3),
                     -1
                 )
-                AND category = ?
+                AND category = $3
                 """,
-                (guild_id, guild_id, user_id, category, category),
-            ) as cur:
-                row = await cur.fetchone()
+                guild_id, user_id, category,
+            )
         else:
-            async with db.execute(
+            row = await conn.fetchrow(
                 """
-                SELECT COUNT(*) + 1 FROM players
-                WHERE  guild_id = ?
+                SELECT COUNT(*) + 1 AS rank FROM players
+                WHERE  guild_id = $1
                 AND    total_wins > COALESCE(
-                    (SELECT total_wins FROM players WHERE guild_id = ? AND user_id = ?),
+                    (SELECT total_wins FROM players WHERE guild_id = $1 AND user_id = $2),
                     -1
                 )
                 """,
-                (guild_id, guild_id, user_id),
-            ) as cur:
-                row = await cur.fetchone()
-        return row[0] if row else 1
+                guild_id, user_id,
+            )
+        return row["rank"] if row else 1
 
 
 async def get_category_stats(guild_id: int, user_id: int) -> dict[str, int]:
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute(
-            "SELECT category, wins FROM category_stats WHERE guild_id = ? AND user_id = ? ORDER BY wins DESC",
-            (guild_id, user_id),
-        ) as cur:
-            rows = await cur.fetchall()
-        return {r[0]: r[1] for r in rows}
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            "SELECT category, wins FROM category_stats WHERE guild_id = $1 AND user_id = $2 ORDER BY wins DESC",
+            guild_id, user_id,
+        )
+        return {r["category"]: r["wins"] for r in rows}
+
+
+async def get_all_guild_players(guild_id: int) -> list[dict]:
+    """Return every player row for a guild (used by the daily reminder)."""
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            "SELECT * FROM players WHERE guild_id = $1 ORDER BY xp DESC",
+            guild_id,
+        )
+        return [dict(r) for r in rows]
