@@ -25,13 +25,62 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 
 async def migrate():
+
     if not DATABASE_URL:
         print("ERROR: DATABASE_URL not set. Check your .env file.")
         sys.exit(1)
 
     if not Path(SQLITE_PATH).exists():
-        print(f"ERROR: SQLite file not found at {SQLITE_PATH}")
-        sys.exit(1)
+        print(f"WARNING: SQLite file not found at {SQLITE_PATH}")
+        print("No legacy data will be migrated. Starting fresh with Postgres.")
+        # Optionally, create empty tables in Postgres if needed
+        pg = await asyncpg.connect(DATABASE_URL)
+        try:
+            await pg.execute("""
+                CREATE TABLE IF NOT EXISTS players (
+                    guild_id        BIGINT  NOT NULL,
+                    user_id         BIGINT  NOT NULL,
+                    username        TEXT    NOT NULL,
+                    xp              INTEGER DEFAULT 0,
+                    total_wins      INTEGER DEFAULT 0,
+                    total_games     INTEGER DEFAULT 0,
+                    current_streak  INTEGER DEFAULT 0,
+                    best_streak     INTEGER DEFAULT 0,
+                    hint_free_wins  INTEGER DEFAULT 0,
+                    last_played     TEXT,
+                    created_at      TIMESTAMP DEFAULT NOW(),
+                    PRIMARY KEY (guild_id, user_id)
+                );
+                CREATE TABLE IF NOT EXISTS category_stats (
+                    guild_id    BIGINT  NOT NULL,
+                    user_id     BIGINT  NOT NULL,
+                    category    TEXT    NOT NULL,
+                    wins        INTEGER DEFAULT 0,
+                    PRIMARY KEY (guild_id, user_id, category)
+                );
+                CREATE TABLE IF NOT EXISTS achievements (
+                    guild_id        BIGINT  NOT NULL,
+                    user_id         BIGINT  NOT NULL,
+                    achievement_id  TEXT    NOT NULL,
+                    unlocked_at     TIMESTAMP DEFAULT NOW(),
+                    PRIMARY KEY (guild_id, user_id, achievement_id)
+                );
+                CREATE TABLE IF NOT EXISTS game_history (
+                    guild_id    BIGINT  NOT NULL,
+                    user_id     BIGINT  NOT NULL,
+                    category    TEXT    NOT NULL,
+                    answer      TEXT    NOT NULL,
+                    elapsed     INTEGER DEFAULT 0,
+                    points      INTEGER DEFAULT 0,
+                    hints_used  INTEGER DEFAULT 0,
+                    difficulty  TEXT    NOT NULL,
+                    played_at   TIMESTAMP DEFAULT NOW()
+                );
+            """)
+            print("✅ Postgres tables ensured. Fresh start complete.")
+        finally:
+            await pg.close()
+        return
 
     print(f"SQLite source : {SQLITE_PATH}")
     print(f"Postgres target: {DATABASE_URL[:40]}...")
